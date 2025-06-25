@@ -2,294 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Coding Portal & Code-Based Quizzes</title>
+  <title>Temp Site</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right,#667eea,#764ba2);
-      display:flex;justify-content:center;align-items:center;
-      min-height:100vh;margin:0;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #e7000c 0%, #fad0c4 50%, #fbc2eb 100%);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scroll-behavior: smooth;
     }
-    .container {
-      background:#fff;padding:30px;width:360px;
-      border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.2);
-      box-sizing:border-box;
+
+    header {
+      margin: 40px 20px 20px;
+      text-align: center;
+      color: #2b2b2b;
     }
-    input,select,textarea,button,details {
-      width:100%;margin:6px 0;padding:8px;font-size:14px;
-      border:1px solid #ccc;border-radius:6px;box-sizing:border-box;
+
+    header h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
     }
-    textarea { height:120px;font-family:monospace; }
-    button { background:#667eea;color:#fff;border:none;cursor:pointer; }
-    button:hover { background:#5a67d8; }
-    .toggle { text-align:center;color:#667eea;cursor:pointer;font-size:13px }
-    p,summary { font-size:13px }
-    #codeOutput {
-      background:#eee;padding:10px;min-height:80px;white-space:pre-wrap;
+
+    header p {
+      font-size: 16px;
+      margin: 4px 0;
     }
-    #quick-buttons { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 }
-    #quick-buttons button { flex:1 1 45%; }
-    #quiz-choices button { width:auto;margin:4px 2px; }
-    #next-btn { margin-top:8px; }
+
+    .recommendations {
+      width: 90%;
+      max-width: 700px;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    .rec-item {
+      padding: 12px;
+      margin: 10px 0;
+      background: #fff;
+      border-radius: 8px;
+      border-left: 5px solid #ff8fb1;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .rec-item:hover {
+      transform: translateX(4px);
+    }
+
+    .iframe-container {
+      width: 90%;
+      max-width: 700px;
+      margin: 40px 0;
+      background: #ffffffee;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    footer {
+      font-size: 14px;
+      color: #fff;
+      margin: 40px 0 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <!-- AUTH -->
-  <div class="container" id="auth-container">
-    <h2 id="form-title">Sign Up</h2>
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="handleAuth()">Sign Up</button>
-    <p class="toggle" onclick="toggleAuth()">Already have an account? Log in</p>
-    <p id="auth-message"></p>
+
+  <header>
+    <h1>Big thanks </h1>
+    <p>Hosted by R9.HOSTING – they somehow made a glitch in their system and made one place in the uk £1</p>
+    <p>This masterpiece brought to you by <strong>gooper0352</strong></p>
+  </header>
+
+  <div class="recommendations">
+    <div class="rec-item">Nothing here yet <strong>Recommend something below!</strong> </div>
   </div>
 
-  <!-- APP -->
-  <div class="container" id="app-container" style="display:none;">
-    <h2 id="welcome"></h2>
-
-    <!-- TUTORIAL VIEW -->
-    <div id="tutorial-view">
-      <h3>🔍 Search Examples</h3>
-      <div style="display:flex;gap:4px">
-        <input id="searchInput" placeholder="e.g. loops" />
-        <button onclick="searchExample()">Go</button>
-      </div>
-
-      <!-- Quick Example Buttons -->
-      <div id="quick-buttons">
-        <button onclick="quickExample('print')">Print</button>
-        <button onclick="quickExample('loops')">Loops</button>
-      </div>
-
-      <div id="codeOutput"></div>
-
-      <details>
-        <summary>How to use the Tutorial</summary>
-        <p>Click one of the Quick buttons or type a keyword (print, loops) and hit “Go” to see JS/Python snippets.</p>
-      </details>
-
-      <button onclick="logout()">Log Out</button>
-    </div>
-
-    <hr/>
-
-    <!-- QUIZ SELECTOR -->
-    <div id="quiz-selector">
-      <h3>📝 Code-Based Quiz</h3>
-      <select id="quizLang">
-        <option value="">-- Choose Language --</option>
-        <option value="javascript">JavaScript</option>
-        <option value="python">Python</option>
-      </select>
-      <button onclick="startQuiz()">Start Quiz</button>
-    </div>
-
-    <!-- QUIZ VIEW -->
-    <div id="quiz-view" style="display:none;">
-      <h3 id="quiz-title"></h3>
-      <div id="quiz-task"></div>
-      <textarea id="codeInput" placeholder="Type your code here..."></textarea>
-      <button onclick="showHint()">Show Hint</button>
-      <p id="quiz-hint" style="font-style:italic;color:#444"></p>
-      <button onclick="submitCode()">Submit</button>
-      <p id="quiz-feedback"></p>
-      <button id="next-btn" onclick="nextTask()" style="display:none">Next</button>
-      <button onclick="endQuiz()">Back</button>
-    </div>
+  <div class="iframe-container">
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1Jsz1vBygUIFxQCH99LYWWffJj_kuyQv4nnE9PfP4POMg4g/viewform?embedded=true">Loading form...</iframe>
   </div>
 
-  <script>
-    // AUTH LOGIC
-    let authMode='signup';
-    function toggleAuth(){
-      authMode=authMode==='signup'?'login':'signup';
-      document.getElementById('form-title').innerText = authMode==='signup'?'Sign Up':'Log In';
-      document.querySelector('.toggle').innerText = authMode==='signup'
-        ? 'Already have an account? Log in'
-        : 'New here? Create an account';
-      document.querySelector('#auth-container button').innerText = authMode==='signup'?'Sign Up':'Log In';
-      document.getElementById('auth-message').innerText='';
-    }
-    function handleAuth(){
-      const u=document.getElementById('username').value.trim();
-      const p=document.getElementById('password').value.trim();
-      if(!u||!p) return showAuthMsg('Fill both fields');
-      let users=JSON.parse(localStorage.getItem('users')||'[]');
-      if(authMode==='signup'){
-        if(users.some(x=>x.username===u)) return showAuthMsg('Username taken');
-        users.push({username:u,password:p});
-        localStorage.setItem('users',JSON.stringify(users));
-        showAuthMsg('Account created! Log in now.');
-        toggleAuth();
-      } else {
-        if(!users.find(x=>x.username===u&&x.password===p))
-          return showAuthMsg('Invalid credentials');
-        showAuthMsg(`Welcome back, ${u}!`);
-        setTimeout(()=>launchApp(u),500);
-      }
-    }
-    function showAuthMsg(m){document.getElementById('auth-message').innerText=m}
-    function launchApp(user){
-      document.getElementById('auth-container').style.display='none';
-      document.getElementById('app-container').style.display='block';
-      document.getElementById('welcome').innerText=`Hello, ${user}!`;
-    }
-    function logout(){
-      document.getElementById('app-container').style.display='none';
-      document.getElementById('auth-container').style.display='block';
-      document.getElementById('username').value='';
-      document.getElementById('password').value='';
-      document.getElementById('auth-message').innerText='';
-      resetQuiz();
-    }
+  <footer>
+    Made by WingmanAI
+  </footer>
 
-    // EXAMPLES & QUICK BUTTONS
-    const examples = {
-      print: `// JavaScript
-console.log('Hello World');
-
-// Python
-print('Hello World')`,
-      loops: `// JavaScript
-for(let i=0;i<5;i++) console.log(i);
-
-// Python
-for i in range(5):
-    print(i)`
-    };
-    function searchExample(){
-      const q=document.getElementById('searchInput').value.trim().toLowerCase();
-      document.getElementById('codeOutput').innerText =
-        examples[q]||'No example found.';
-    }
-    function quickExample(topic){
-      document.getElementById('searchInput').value=topic;
-      searchExample();
-    }
-
-    // QUIZ DATA & STATE
-    const quizData = {
-      javascript: [
-        {
-          prompt:"1) Write `function add(a,b)` that returns a+b.",
-          hint:"Use `return a + b;` inside your function.",
-          validate:code=> /function\s+add\s*\(\s*a\s*,\s*b\s*\)/.test(code)
-                          &&/return\s+a\s*\+\s*b/.test(code)
-        },
-        {
-          prompt:"2) Write a `for` loop printing 0..4.",
-          hint:"Use `for(let i=0;i<5;i++) console.log(i);`",
-          validate:code=> /for\s*\(\s*let\s+i\s*=\s*0/.test(code)
-                          &&/console\.log\(\s*i\s*\)/.test(code)
-        },
-        {
-          prompt:"3) Declare a constant `PI = 3.14`.",
-          hint:"Use `const PI = 3.14;`",
-          validate:code=> /\bconst\s+PI\s*=\s*3\.14/.test(code)
-        },
-        {
-          prompt:"4) Arrow fn `square(x)` returning x*x.",
-          hint:"`const square = x => x*x;`",
-          validate:code=> /square\s*=\s*x\s*=>/.test(code)
-                          &&/\*\s*x/.test(code)
-        },
-        {
-          prompt:"5) Parse JSON from var `str`.",
-          hint:"Use `JSON.parse(str)`.",
-          validate:code=> /JSON\.parse\s*\(\s*str\s*\)/.test(code)
-        }
-      ],
-      python: [
-        {
-          prompt:"1) Define `add(a,b)` that returns a+b.",
-          hint:"`def add(a,b):` then `return a+b`.",
-          validate:code=> /def\s+add\s*\(\s*a\s*,\s*b\s*\)\s*:/.test(code)
-                          &&/return\s+a\s*\+\s*b/.test(code)
-        },
-        {
-          prompt:"2) Loop 0..4 printing each.",
-          hint:"`for i in range(5): print(i)`",
-          validate:code=> /for\s+i\s+in\s+range\(5\)\s*:/.test(code)
-                          &&/print\(\s*i\s*\)/.test(code)
-        },
-        {
-          prompt:"3) Assign `PI = 3.14`.",
-          hint:"Just `PI = 3.14`.",
-          validate:code=> /\bPI\s*=\s*3\.14/.test(code)
-        },
-        {
-          prompt:"4) Lambda square: `square = lambda x: x*x`.",
-          hint:"Use `lambda x: x*x`.",
-          validate:code=> /square\s*=\s*lambda\s*x\s*:\s*x\s*\*\s*x/.test(code)
-        },
-        {
-          prompt:"5) Load JSON from `s` with `json.loads`.",
-          hint:"`import json` then `json.loads(s)`.",
-          validate:code=> /import\s+json/.test(code)
-                          &&/json\.loads\s*\(\s*s\s*\)/.test(code)
-        }
-      ]
-    };
-
-    let quizLang,tasks,idx,score;
-    function startQuiz(){
-      quizLang=document.getElementById('quizLang').value;
-      if(!quizLang||!quizData[quizLang])
-        return alert('Pick JavaScript or Python.');
-      tasks=quizData[quizLang]; idx=0; score=0;
-      document.getElementById('quiz-selector').style.display='none';
-      document.getElementById('tutorial-view').style.display='none';
-      showTask();
-    }
-    function showTask(){
-      document.getElementById('quiz-view').style.display='block';
-      document.getElementById('quiz-title').innerText=
-        quizLang.charAt(0).toUpperCase()+quizLang.slice(1)+' Quiz';
-      document.getElementById('quiz-task').innerText=tasks[idx].prompt;
-      document.getElementById('codeInput').value='';
-      document.getElementById('quiz-hint').innerText='';
-      document.getElementById('quiz-feedback').innerText='';
-      document.getElementById('next-btn').style.display='none';
-      document.querySelector('#quiz-view button[onclick="submitCode()"]').style.display='inline-block';
-    }
-    function showHint(){
-      document.getElementById('quiz-hint').innerText=tasks[idx].hint;
-    }
-    function submitCode(){
-      const code=document.getElementById('codeInput').value;
-      const ok=tasks[idx].validate(code);
-      if(ok) score++;
-      document.getElementById('quiz-feedback').innerText= ok?'✅ Good job!':'❌ That did not match.';
-      document.getElementById('next-btn').style.display='inline-block';
-    }
-    function nextTask(){
-      idx++;
-      if(idx<tasks.length) showTask();
-      else finishQuiz();
-    }
-    function finishQuiz(){
-      const n=tasks.length;
-      const diff= score===n?'Hard':score<=1?'Simple':'Medium';
-      document.getElementById('quiz-task').innerText=`You scored ${score}/${n} — Difficulty: ${diff}`;
-      document.getElementById('codeInput').style.display='none';
-      document.getElementById('quiz-feedback').innerText='';
-      document.getElementById('next-btn').style.display='none';
-      document.querySelector('#quiz-view button[onclick="submitCode()"]').style.display='none';
-    }
-    function endQuiz(){
-      document.getElementById('quiz-view').style.display='none';
-      document.getElementById('quiz-selector').style.display='block';
-      document.getElementById('tutorial-view').style.display='block';
-      document.getElementById('codeInput').style.display='block';
-      document.querySelector('#quiz-view button[onclick="submitCode()"]').style.display='inline-block';
-    }
-    function resetQuiz(){
-      document.getElementById('quiz-selector').style.display='block';
-      document.getElementById('tutorial-view').style.display='block';
-      document.getElementById('quiz-view').style.display='none';
-      document.getElementById('codeInput').style.display='block';
-    }
-  </script>
 </body>
 </html>
