@@ -27,6 +27,7 @@
       font-size: 16px;
       border-bottom: 2px solid #e74c3c;
       transition: background-color 0.3s;
+      cursor: pointer;
     }
 
     .top-button:hover {
@@ -123,32 +124,42 @@
 </head>
 <body>
 
-  <!-- TOP ADS BUTTON -->
-  <a href="#ads-footer" class="top-button">Ads</a>
+  <!-- SECRET ADMIN BUTTON (Rickroll bait) -->
+  <div id="admin-button-container" style="width: 100%;">
+    <div class="top-button" id="rickroll-button">secret.hidden.unless.admin</div>
+  </div>
 
   <header>
-    <h1>Big thanks </h1>
-    <p>Hosted by R9.HOSTING – they somehow made a glitch in their system and made one place in the uk £1</p>
+    <h1>Big thanks</h1>
+    <p>Hosted by R9.HOSTING – they somehow made a glitch in their system and made one place in the UK £1</p>
     <p>This temp site is made by <strong>gooper0352</strong></p>
   </header>
 
   <div class="recommendations">
-    <div class="rec-item">Hello <strong>Bob</strong> </div>
-    <div class="rec-item">Nothing here yet <strong>Recommend something below!</strong> </div>
+    <div class="rec-item">Hello <strong>Bob</strong></div>
+    <div class="rec-item">Nothing here yet <strong>Recommend something below!</strong></div>
   </div>
 
   <div class="iframe-container">
     <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1Jsz1vBygUIFxQCH99LYWWffJj_kuyQv4nnE9PfP4POMg4g/viewform?embedded=true">Loading form...</iframe>
   </div>
 
-  <!-- DISCORD BUTTON BELOW FORM -->
   <a href="https://discord.gg/5BH7F44uqS" class="discord-button" target="_blank">DMX DESKTOP DISCORD</a>
 
-  <!-- FOOTER ANCHOR -->
   <footer id="ads-footer">
     Made by WingmanAI
   </footer>
 
+  <script>
+    console.warn("⚠️ Admin mode enabled. Proceed with caution.");
+
+    document.getElementById('rickroll-button').addEventListener('click', function () {
+      alert("Verifying admin credentials...");
+      setTimeout(() => {
+        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+      }, 1500);
+    });
+  </script>
+
 </body>
 </html>
-
