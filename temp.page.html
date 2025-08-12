@@ -75,24 +75,6 @@
       transform: translateX(4px);
     }
 
-    .discord-button {
-      display: inline-block;
-      padding: 14px 28px;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      background-color: #5865F2;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      margin: 20px 0;
-      transition: background-color 0.3s;
-    }
-
-    .discord-button:hover {
-      background-color: #4752C4;
-    }
-
     .iframe-container {
       width: 90%;
       max-width: 700px;
@@ -124,7 +106,7 @@
 </head>
 <body>
 
-  <!-- SECRET ADMIN BUTTON (Rickroll bait) -->
+  <!-- SECRET ADMIN BUTTON -->
   <div id="admin-button-container" style="width: 100%;">
     <div class="top-button" id="rickroll-button">secret.hidden.unless.admin</div>
   </div>
@@ -144,11 +126,12 @@
     <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1Jsz1vBygUIFxQCH99LYWWffJj_kuyQv4nnE9PfP4POMg4g/viewform?embedded=true">Loading form...</iframe>
   </div>
 
-  <a href="https://discord.gg/5BH7F44uqS" class="discord-button" target="_blank">DMX DESKTOP DISCORD</a>
-
   <footer id="ads-footer">
     Made by WingmanAI
   </footer>
+
+  <!-- Rickroll Audio -->
+  <audio id="rickroll-audio" src="https://www.myinstants.com/media/sounds/rick-roll.mp3"></audio>
 
   <script>
     console.warn("⚠️ Admin mode enabled. Proceed with caution.");
@@ -156,7 +139,8 @@
     document.getElementById('rickroll-button').addEventListener('click', function () {
       alert("Verifying admin credentials...");
       setTimeout(() => {
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        const audio = document.getElementById('rickroll-audio');
+        audio.play();
       }, 1500);
     });
   </script>
