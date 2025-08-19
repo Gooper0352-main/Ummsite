@@ -106,11 +106,6 @@
 </head>
 <body>
 
-  <!-- SECRET ADMIN BUTTON -->
-  <div id="admin-button-container" style="width: 100%;">
-    <div class="top-button" id="rickroll-button">secret.hidden.unless.admin</div>
-  </div>
-
   <header>
     <h1>Big thanks</h1>
     <p>Hosted by R9.HOSTING – they somehow made a glitch in their system and made one place in the UK £1</p>
@@ -130,20 +125,8 @@
     Made by WingmanAI
   </footer>
 
-  <!-- Rickroll Audio -->
-  <audio id="rickroll-audio" src="https://www.myinstants.com/media/sounds/rick-roll.mp3"></audio>
-
-  <script>
-    console.warn("⚠️ Admin mode enabled. Proceed with caution.");
-
-    document.getElementById('rickroll-button').addEventListener('click', function () {
-      alert("Verifying admin credentials...");
-      setTimeout(() => {
-        const audio = document.getElementById('rickroll-audio');
-        audio.play();
-      }, 1500);
-    });
   </script>
 
 </body>
 </html>
+
