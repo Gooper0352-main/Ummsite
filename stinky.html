@@ -10,14 +10,72 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       height: 100vh;
       color: white;
-      font-size: 5rem;
+      font-size: 2.5rem;
       font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-  The secret is: Error: 503 Api is offline
+  <div id="secret">Searching...</div>
+
+  <script>
+    // Full list of funny secrets (your example included)
+    const secrets = [
+      "You lick toothpaste on your armpit",
+      "You once whispered 'I love you' to a sandwich",
+      "You talk to your fridge every night",
+      "You sing opera to your pillow",
+      "You name every sock you own",
+      "You danced with a cactus for two hours",
+      "You believe your toothbrush has feelings",
+      "You stare at your ceiling and giggle for no reason",
+      "You tried to teach your goldfish math",
+      "You once wore sunglasses in the shower",
+      "You have a playlist for vacuuming",
+      "You talk to your WiFi router when it disconnects",
+      "You have eaten cereal with water before",
+      "You practice evil laughs at 3 AM",
+      "You tried to convince a cat to do your homework",
+      "You once hugged a tree and said sorry",
+      "You talk to your gaming console before every match",
+      "You pretended to be sick just to finish a TV show",
+      "You once wrote a love letter to pizza",
+      "You secretly name your charging cables",
+      "You told a potato it was your best friend",
+      "You ate ice cream with a fork on purpose",
+      "You told your pillow a secret and waited for a reply"
+    ];
+
+    const secretElement = document.getElementById("secret");
+
+    function showSecret(secret) {
+      secretElement.textContent = "Your secret is: " + secret;
+    }
+
+    // Get or generate secret
+    let mySecret = localStorage.getItem("mySecret");
+    if (!mySecret) {
+      mySecret = secrets[Math.floor(Math.random() * secrets.length)];
+      localStorage.setItem("mySecret", mySecret);
+    }
+
+    // Show "Searching..." then the secret after 2 seconds
+    setTimeout(() => showSecret(mySecret), 2000);
+
+    // Console command to switch secret
+    window.Switch = function() {
+      const newSecret = secrets[Math.floor(Math.random() * secrets.length)];
+      localStorage.setItem("mySecret", newSecret);
+      showSecret(newSecret);
+      console.log("%cYour secret has been switched!", "color: green; font-size: 16px;");
+    };
+
+    console.log("%cType Switch() in the console to change your secret!", "color: cyan; font-size: 16px;");
+  </script>
 </body>
 </html>
