@@ -24,53 +24,54 @@
   <div id="secret">Searching...</div>
 
   <script>
-    // Full list of funny secrets (your example included)
+    const secretElement = document.getElementById("secret");
+
+    // Weird / absurd secrets
     const secrets = [
       "You lick toothpaste on your armpit",
-      "Your stinky",
-      "You once whispered 'I love you' to a sandwich",
-      "You talk to your fridge every night",
-      "You sing opera to your pillow",
-      "You name every sock you own",
-      "You danced with a cactus for two hours",
-      "You believe your toothbrush has feelings",
-      "You stare at your ceiling and giggle for no reason",
-      "You tried to teach your goldfish math",
-      "You once wore sunglasses in the shower",
-      "You have a playlist for vacuuming",
-      "You talk to your WiFi router when it disconnects",
-      "You have eaten cereal with water before",
-      "You practice evil laughs at 3 AM",
-      "You tried to convince a cat to do your homework",
-      "You once hugged a tree and said sorry",
-      "You talk to your gaming console before every match",
-      "You pretended to be sick just to finish a TV show",
-      "You once wrote a love letter to pizza",
-      "You secretly name your charging cables",
-      "You told a potato it was your best friend",
-      "You ate ice cream with a fork on purpose",
-      "You told your pillow a secret and waited for a reply"
+      "You once fed a sandwich to your goldfish",
+      "You named your left sock 'Reginald' and whispered secrets to it",
+      "You performed ballet for a cactus",
+      "You believe your fridge is plotting against you",
+      "You once sang karaoke to your toaster",
+      "You wear sunglasses in the shower to feel mysterious",
+      "You argue with potatoes about politics",
+      "You put a hat on your WiFi router for good luck",
+      "You tried to teach your cat calculus",
+      "You wrote a love letter to a slice of pizza",
+      "You practice evil laughter in the supermarket",
+      "You hug trees and apologize for your existence",
+      "You pretend your pillows are sentient beings",
+      "You perform stand-up comedy for your plants",
+      "You whisper to your shoes before running",
+      "You made a birthday cake for your vacuum cleaner",
+      "You once challenged a mirror to a staring contest",
+      "You bow to your fridge every morning",
+      "You keep a diary for your toothbrush"
     ];
 
-    const secretElement = document.getElementById("secret");
+    function getRandomSecret(exclude) {
+      let filtered = secrets.filter(s => s !== exclude);
+      return filtered[Math.floor(Math.random() * filtered.length)];
+    }
 
     function showSecret(secret) {
       secretElement.textContent = "Your secret is: " + secret;
     }
 
-    // Get or generate secret
+    // Load secret from localStorage or generate new one
     let mySecret = localStorage.getItem("mySecret");
     if (!mySecret) {
-      mySecret = secrets[Math.floor(Math.random() * secrets.length)];
+      mySecret = getRandomSecret(null);
       localStorage.setItem("mySecret", mySecret);
     }
 
-    // Show "Searching..." then the secret after 2 seconds
+    // Show "Searching..." for 2 seconds before revealing
     setTimeout(() => showSecret(mySecret), 2000);
 
     // Console command to switch secret
     window.Switch = function() {
-      const newSecret = secrets[Math.floor(Math.random() * secrets.length)];
+      const newSecret = getRandomSecret(mySecret);
       localStorage.setItem("mySecret", newSecret);
       showSecret(newSecret);
       console.log("%cYour secret has been switched!", "color: green; font-size: 16px;");
