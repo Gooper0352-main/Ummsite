@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VPN Map – Zoom Pan Viewer</title>
+  <style>
+    body { margin: 0; height: 100vh; background: black; color: white; display: flex; flex-direction: column; }
+    header { padding: 10px; text-align: center; }
+    #controls { padding: 10px; text-align: center; }
+    #controls button {
+      margin: 0 6px;
+      padding: 8px 14px;
+      font-size: 16px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #controls button:hover { background: #666; }
+    #pdf-container { flex: 1; overflow: hidden; position: relative; }
+    canvas { background: #222; position: absolute; top: 0; left: 0; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+  </style>
+</head>
+<body>
+  <header><h1>VPN Map (Who Owns Who)</h1></header>
+  <div id="controls">
+    <button onclick="zoomIn()">Zoom In</button>
+    <button onclick="zoomOut()">Zoom Out</button>
+    <button onclick="resetZoom()">Reset</button>
+  </div>
+  <div id="pdf-container">
+    <canvas id="pdf-render"></canvas>
+  </div>
+
+  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script>
+    const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
+    let pdfDoc = null, pageNum = 1, scale = 1.0;
+    const canvas = document.getElementById('pdf-render');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('pdf-container');
+    let offset = { x: 0, y: 0 }, isDragging = false, dragStart = {};
+
+    pdfjsLib.getDocument(url).promise.then(pdf => { pdfDoc = pdf; renderPage(); });
+
+    function renderPage() {
+      pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.translate(offset.x, offset.y);
+        page.render({ canvasContext: ctx, viewport }).promise;
+      });
+    }
+
+    function zoomIn() { scale += 0.2; offset = { x: 0, y: 0 }; renderPage(); }
+    function zoomOut() { if (scale > 0.4) { scale -= 0.2; offset = { x: 0, y: 0 }; renderPage(); }}
+    function resetZoom() { scale = 1.0; offset = { x: 0, y: 0 }; renderPage(); }
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      dragStart = { x: e.clientX - offset.x, y: e.clientY - offset.y };
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      offset = { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y };
+      renderPage();
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      scale -= e.deltaY * 0.001;
+      scale = Math.min(Math.max(0.5, scale), 5);
+      offset = { x: 0, y: 0 };
+      renderPage();
+    });
+  </script>
+</body>
+</html>
