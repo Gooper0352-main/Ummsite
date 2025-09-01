@@ -36,13 +36,12 @@
     <canvas id="pdf-render"></canvas>
   </div>
 
-  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
-    const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
+    const url = 'vpnmap.pdf'; // Use local file on GitHub Pages
     let pdfDoc = null, pageNum = 1, scale = 1.0;
     const canvas = document.getElementById('pdf-render');
     const ctx = canvas.getContext('2d');
-    const container = document.getElementById('pdf-container');
     let offset = { x: 0, y: 0 }, isDragging = false, dragStart = {};
 
     pdfjsLib.getDocument(url).promise.then(pdf => { pdfDoc = pdf; renderPage(); });
