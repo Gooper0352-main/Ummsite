@@ -3,115 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VPN Map PDF – Instant Zoom/Pan with Cache</title>
+<title>VPN Map Download</title>
 <style>
-  body { margin: 0; background: black; overflow: hidden; font-family: Arial; }
-  #back { position: absolute; top: 10px; left: 10px; padding: 8px 14px; background: #444; color: white; border-radius: 5px; text-decoration: none; z-index: 10; }
-  #back:hover { background: #666; }
-  #pdf-container { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
-  canvas { position: absolute; top: 0; left: 0; cursor: grab; background: #222; }
-  canvas:active { cursor: grabbing; }
-  #loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 18px; text-align: center; }
+  body { 
+    background: black; 
+    color: white; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    font-family: Arial, sans-serif; 
+    flex-direction: column;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  .button {
+    padding: 20px 40px;
+    margin: 20px 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    background-color: #444;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .button:hover { background-color: #666; }
+  p { font-size: 18px; max-width: 600px; margin: 0 auto; }
 </style>
 </head>
 <body>
 
-<a href="index.html" id="back">⬅ Back to Main Page</a>
-<div id="pdf-container">
-  <div id="loader">Loading PDF...</div>
-  <canvas id="pdf-render"></canvas>
-</div>
+<h1>VPN Map PDF</h1>
+<p>Just to make it quicker to load we decided to make this a PDF. No, not pedo (Online Safety Act, don’t kill me 😅)</p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script>
-const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
-const canvas = document.getElementById('pdf-render');
-const ctx = canvas.getContext('2d');
-const loader = document.getElementById('loader');
+<a href="https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf" download class="button">
+  Download VPN Map
+</a>
 
-let offset = { x: 0, y: 0 };
-let isDragging = false;
-let dragStart = {};
-let scale = 1.0;
-let img = null;
+<a href="mainpage.html" class="button">⬅ Back to Main Page</a>
 
-// Check if cached PDF exists
-const cached = localStorage.getItem('vpnmap_cache');
-if (cached) {
-  img = new Image();
-  img.src = cached;
-  img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    loader.style.display = 'none';
-    draw();
-  };
-} else {
-  // Load PDF and cache
-  pdfjsLib.getDocument({ url, cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/', cMapPacked: true }).promise
-    .then(pdf => pdf.getPage(1))
-    .then(page => {
-      const viewport = page.getViewport({ scale: 2 }); 
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = viewport.width;
-      offCanvas.height = viewport.height;
-      const offCtx = offCanvas.getContext('2d');
-
-      const renderTask = page.render({ canvasContext: offCtx, viewport });
-      renderTask.onProgress = function(progress) {
-        loader.innerText = `Loading PDF: ${Math.round(progress.loaded / progress.total * 100)}%`;
-      }
-
-      renderTask.promise.then(() => {
-        img = new Image();
-        img.src = offCanvas.toDataURL();
-        img.onload = () => {
-          localStorage.setItem('vpnmap_cache', img.src); // Save to cache
-          canvas.width = img.width;
-          canvas.height = img.height;
-          loader.style.display = 'none';
-          draw();
-        };
-      });
-    });
-}
-
-// Draw image with current offset and scale
-function draw() {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.setTransform(scale, 0, 0, scale, offset.x, offset.y);
-  ctx.drawImage(img, 0, 0);
-}
-
-// Dragging
-canvas.addEventListener('mousedown', e => {
-  isDragging = true;
-  dragStart = { x: e.clientX - offset.x, y: e.clientY - offset.y };
-});
-canvas.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  offset = { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y };
-  draw();
-});
-window.addEventListener('mouseup', () => { isDragging = false; });
-
-// Scroll to zoom
-canvas.addEventListener('wheel', e => {
-  e.preventDefault();
-  const prevScale = scale;
-  scale -= e.deltaY * 0.001;
-  scale = Math.min(Math.max(0.5, scale), 5);
-
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-
-  offset.x -= (mx - offset.x) * (scale / prevScale - 1);
-  offset.y -= (my - offset.y) * (scale / prevScale - 1);
-
-  draw();
-});
-</script>
 </body>
 </html>
