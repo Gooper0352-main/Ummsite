@@ -23,18 +23,16 @@
       height: calc(100vh - 100px);
       overflow: hidden;
       position: relative;
+      cursor: grab;
   }
   canvas {
       position: absolute;
       top: 0;
       left: 0;
-      background: #222;
       transform-origin: 0 0;
-      cursor: grab;
   }
   canvas:active { cursor: grabbing; }
 
-  /* Loading Overlay */
   #loading-overlay {
       position: absolute;
       top: 0;
@@ -79,7 +77,8 @@
     <button onclick="resetView()">Reset</button>
 </div>
 <div id="pdf-container">
-    <canvas id="pdf-render"></canvas>
+    <canvas id="canvas-low"></canvas>
+    <canvas id="canvas-high"></canvas>
     <div id="loading-overlay">
         <div>Loading VPN Map... <span id="progress-text">0%</span></div>
         <div id="progress-bar"><div id="progress-fill"></div></div>
@@ -91,98 +90,106 @@
 <script>
 const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
 
-let pdfDoc = null, pageNum = 1, zoom = 1, panX = 0, panY = 0;
-const canvas = document.getElementById('pdf-render');
-const ctx = canvas.getContext('2d');
+let pdfDoc = null, pageNum = 1;
+let zoom = 1, panX = 0, panY = 0;
+const lowCanvas = document.getElementById('canvas-low');
+const lowCtx = lowCanvas.getContext('2d');
+const highCanvas = document.getElementById('canvas-high');
+const highCtx = highCanvas.getContext('2d');
 const container = document.getElementById('pdf-container');
 const loadingOverlay = document.getElementById('loading-overlay');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const statusText = document.getElementById('status-text');
 
-// Download PDF with progress
+// PDF download progress
 const loadingTask = pdfjsLib.getDocument({ url: url, rangeChunkSize: 65536 });
-loadingTask.onProgress = function(progressData) {
+loadingTask.onProgress = function(progressData){
     let percent = Math.floor((progressData.loaded / progressData.total) * 100);
     progressFill.style.width = percent + '%';
     progressText.textContent = percent + '%';
 };
-
 loadingTask.promise.then(pdf => {
     pdfDoc = pdf;
-    renderLowRes(); // Fast low-res preview
+    renderLowRes(); // show fast preview
 }).catch(err => console.error(err));
 
-function renderLowRes() {
+// Low-res render
+function renderLowRes(){
     pdfDoc.getPage(pageNum).then(page => {
         const viewport = page.getViewport({ scale: 0.3 });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        page.render({ canvasContext: ctx, viewport }).promise.then(() => {
-            hideLoading();       // Hide overlay immediately
+        lowCanvas.width = viewport.width;
+        lowCanvas.height = viewport.height;
+        highCanvas.width = viewport.width;
+        highCanvas.height = viewport.height;
+
+        page.render({ canvasContext: lowCtx, viewport }).promise.then(()=>{
+            hideLoading(); // hide overlay immediately
             statusText.textContent = 'Rendering high-res...';
-            renderHighRes();     // Render full-res in background
+            renderHighRes(); // start high-res in background
         });
     });
 }
 
-function renderHighRes() {
-    pdfDoc.getPage(pageNum).then(page => {
+// High-res render (progressive, replaces low-res visually)
+function renderHighRes(){
+    pdfDoc.getPage(pageNum).then(page=>{
         const viewport = page.getViewport({ scale: 1 });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const renderTask = page.render({ canvasContext: ctx, viewport });
-        renderTask.promise.then(() => {
-            statusText.textContent = ''; // remove text when done
-            applyTransform();
+        highCanvas.width = viewport.width;
+        highCanvas.height = viewport.height;
+        page.render({ canvasContext: highCtx, viewport }).promise.then(()=>{
+            statusText.textContent = ''; // done
         });
     });
 }
 
-function hideLoading() { loadingOverlay.style.display = 'none'; }
+function hideLoading(){ loadingOverlay.style.display='none'; }
 
-function applyTransform() {
-    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+// Apply zoom & pan to both canvases
+function applyTransform(){
+    const transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    lowCanvas.style.transform = transform;
+    highCanvas.style.transform = transform;
 }
 
-function zoomIn() { zoom += 0.2; applyTransform(); }
-function zoomOut() { zoom = Math.max(0.2, zoom - 0.2); applyTransform(); }
-function resetView() { zoom = 1; panX = 0; panY = 0; applyTransform(); }
+function zoomIn(){ zoom+=0.2; applyTransform(); }
+function zoomOut(){ zoom = Math.max(0.2, zoom-0.2); applyTransform(); }
+function resetView(){ zoom=1; panX=0; panY=0; applyTransform(); }
 
 // Drag to pan
-let isDragging = false, startX, startY;
-container.addEventListener('mousedown', e => {
-    isDragging = true;
+let isDragging=false, startX, startY;
+container.addEventListener('mousedown', e=>{
+    isDragging=true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
 });
-container.addEventListener('mousemove', e => {
-    if (!isDragging) return;
+container.addEventListener('mousemove', e=>{
+    if(!isDragging) return;
     panX = e.clientX - startX;
     panY = e.clientY - startY;
     applyTransform();
 });
-window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('mouseup', ()=> isDragging=false);
 
-// Scroll to zoom
-container.addEventListener('wheel', e => {
+// Scroll wheel to zoom
+container.addEventListener('wheel', e=>{
     e.preventDefault();
     const zoomFactor = 1.1;
     const mouseX = e.clientX - container.offsetLeft;
     const mouseY = e.clientY - container.offsetTop;
 
-    if (e.deltaY < 0) {
+    if(e.deltaY < 0){
         zoom *= zoomFactor;
         panX = mouseX - (mouseX - panX) * zoomFactor;
         panY = mouseY - (mouseY - panY) * zoomFactor;
-    } else {
+    }else{
         zoom /= zoomFactor;
         zoom = Math.max(0.2, zoom);
         panX = mouseX - (mouseX - panX) / zoomFactor;
         panY = mouseY - (mouseY - panY) / zoomFactor;
     }
     applyTransform();
-}, { passive: false });
+},{passive:false});
 </script>
 </body>
 </html>
