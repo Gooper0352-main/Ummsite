@@ -3,156 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VPN Map Viewer</title>
+<title>VPN Map – Interactive</title>
 <style>
-  body { margin: 0; background: black; color: white; font-family: Arial; }
-  header { text-align: center; padding: 10px; }
-  #controls { text-align: center; margin: 10px; }
-  #controls button {
-      margin: 5px;
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-  }
-  #controls button:hover { background: #666; }
-  #pdf-container {
-      width: 100vw;
-      height: calc(100vh - 100px);
-      overflow: hidden;
-      position: relative;
-      cursor: grab;
-  }
-  canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 0 0;
-  }
-  canvas:active { cursor: grabbing; }
-
-  #loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: white;
-      font-size: 18px;
-  }
+  body { margin: 0; background: black; color: white; font-family: Arial; overflow: hidden; }
+  svg { width: 100vw; height: 100vh; display: block; }
+  circle { stroke: white; stroke-width: 1.5px; cursor: grab; }
+  circle:active { cursor: grabbing; }
+  text { fill: white; font-size: 12px; pointer-events: none; }
+  #back { position: absolute; top: 10px; left: 10px; padding: 8px 14px; background: #444; color: white; border-radius: 5px; text-decoration: none; z-index: 10; }
+  #back:hover { background: #666; }
 </style>
 </head>
 <body>
-<header><h1>VPN Map (Who Owns Who)</h1></header>
-<div id="controls">
-    <button onclick="zoomIn()">Zoom In</button>
-    <button onclick="zoomOut()">Zoom Out</button>
-    <button onclick="resetView()">Reset</button>
-    <button onclick="goToMain()">Back to Main Page</button>
-</div>
-<div id="pdf-container">
-    <canvas id="canvas-main"></canvas>
-    <div id="loading-overlay">
-        Loading VPN Map...
-    </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<a href="index.html" id="back">⬅ Back to Main Page</a>
+<svg id="map"></svg>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
+fetch('vpnmap.json')
+  .then(res => res.json())
+  .then(data => {
+    const svg = d3.select("#map");
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-let pdfDoc = null, pageNum = 1;
-let zoom = 1, panX = 0, panY = 0;
-const canvas = document.getElementById('canvas-main');
-const ctx = canvas.getContext('2d');
-const container = document.getElementById('pdf-container');
-const loadingOverlay = document.getElementById('loading-overlay');
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 5])
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform);
+      });
 
-// Offscreen canvas for high-res PDF
-const offCanvas = document.createElement('canvas');
-const offCtx = offCanvas.getContext('2d');
+    svg.call(zoom);
 
-const loadingTask = pdfjsLib.getDocument({ url: url });
-loadingTask.promise.then(pdf => {
-    pdfDoc = pdf;
-    renderPDFOnce();
-}).catch(err => console.error(err));
+    const g = svg.append("g");
 
-function renderPDFOnce() {
-    pdfDoc.getPage(pageNum).then(page => {
-        // Full resolution
-        const viewport = page.getViewport({ scale: 1 });
-        offCanvas.width = viewport.width;
-        offCanvas.height = viewport.height;
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+    const simulation = d3.forceSimulation(data.nodes)
+      .force("link", d3.forceLink(data.links).id(d => d.id).distance(150))
+      .force("charge", d3.forceManyBody().strength(-400))
+      .force("center", d3.forceCenter(width / 2, height / 2));
 
-        // Render PDF to offscreen canvas
-        page.render({ canvasContext: offCtx, viewport }).promise.then(() => {
-            // Copy offscreen canvas to visible canvas
-            ctx.drawImage(offCanvas, 0, 0);
-            loadingOverlay.style.display = 'none';
-            applyTransform(); // initial zoom/pan
-        });
+    const link = g.append("g")
+      .attr("stroke", "#888")
+      .attr("stroke-width", 1.5)
+      .selectAll("line")
+      .data(data.links)
+      .join("line");
+
+    const node = g.append("g")
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 1.5)
+      .selectAll("circle")
+      .data(data.nodes)
+      .join("circle")
+        .attr("r", 15)
+        .attr("fill", d => d3.schemeCategory10[d.group % 10])
+        .call(drag(simulation));
+
+    const label = g.append("g")
+      .selectAll("text")
+      .data(data.nodes)
+      .join("text")
+      .text(d => d.id)
+      .attr("dy", 4)
+      .attr("dx", 18);
+
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+      label
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
     });
-}
 
-// Apply zoom and pan via CSS transform
-function applyTransform(){
-    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
-}
-
-function zoomIn(){ zoom += 0.2; applyTransform(); }
-function zoomOut(){ zoom = Math.max(0.2, zoom - 0.2); applyTransform(); }
-function resetView(){ zoom = 1; panX = 0; panY = 0; applyTransform(); }
-
-// Drag to pan
-let isDragging = false, startX, startY;
-container.addEventListener('mousedown', e => {
-    isDragging = true;
-    startX = e.clientX - panX;
-    startY = e.clientY - panY;
-});
-container.addEventListener('mousemove', e => {
-    if(!isDragging) return;
-    panX = e.clientX - startX;
-    panY = e.clientY - startY;
-    applyTransform();
-});
-window.addEventListener('mouseup', () => isDragging = false);
-
-// Scroll wheel zoom
-container.addEventListener('wheel', e => {
-    e.preventDefault();
-    const zoomFactor = 1.1;
-    const mouseX = e.clientX - container.offsetLeft;
-    const mouseY = e.clientY - container.offsetTop;
-
-    if(e.deltaY < 0){
-        zoom *= zoomFactor;
-        panX = mouseX - (mouseX - panX) * zoomFactor;
-        panY = mouseY - (mouseY - panY) * zoomFactor;
-    } else {
-        zoom /= zoomFactor;
-        zoom = Math.max(0.2, zoom);
-        panX = mouseX - (mouseX - panX) / zoomFactor;
-        panY = mouseY - (mouseY - panY) / zoomFactor;
+    function drag(simulation){
+      function dragstarted(event, d) {
+        if(!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      }
+      function dragged(event, d){
+        d.fx = event.x; d.fy = event.y;
+      }
+      function dragended(event, d){
+        if(!event.active) simulation.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }
+      return d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
     }
-    applyTransform();
-},{passive:false});
-
-// Back to main page
-function goToMain(){
-    window.location.href = 'mainpage.html';
-}
+});
 </script>
 </body>
 </html>
