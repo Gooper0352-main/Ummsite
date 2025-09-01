@@ -3,104 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VPN Map – Interactive</title>
+<title>VPN Map PDF</title>
 <style>
-  body { margin: 0; background: black; color: white; font-family: Arial; overflow: hidden; }
-  svg { width: 100vw; height: 100vh; display: block; }
-  circle { stroke: white; stroke-width: 1.5px; cursor: grab; }
-  circle:active { cursor: grabbing; }
-  text { fill: white; font-size: 12px; pointer-events: none; }
+  body { margin: 0; background: black; color: white; font-family: Arial, sans-serif; overflow: hidden; }
   #back { position: absolute; top: 10px; left: 10px; padding: 8px 14px; background: #444; color: white; border-radius: 5px; text-decoration: none; z-index: 10; }
   #back:hover { background: #666; }
+  #pdf-container { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+  canvas { position: absolute; top: 0; left: 0; cursor: grab; background: #222; }
+  canvas:active { cursor: grabbing; }
+  #loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 18px; }
 </style>
 </head>
 <body>
 
 <a href="index.html" id="back">⬅ Back to Main Page</a>
-<svg id="map"></svg>
+<div id="pdf-container">
+  <div id="loader">Loading PDF: 0%</div>
+  <canvas id="pdf-render"></canvas>
+</div>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
-fetch('vpnmap.json')
-  .then(res => res.json())
-  .then(data => {
-    const svg = d3.select("#map");
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnmap.pdf';
+let pdfDoc = null, pageNum = 1, scale = 1.0;
+const canvas = document.getElementById('pdf-render');
+const ctx = canvas.getContext('2d');
+const container = document.getElementById('pdf-container');
+const loader = document.getElementById('loader');
+let offset = { x: 0, y: 0 }, isDragging = false, dragStart = {};
 
-    const zoom = d3.zoom()
-      .scaleExtent([0.5, 5])
-      .on("zoom", (event) => {
-        g.attr("transform", event.transform);
-      });
+pdfjsLib.getDocument({ url, cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/', cMapPacked: true }).promise
+  .then(pdf => {
+    pdfDoc = pdf;
+    renderPage();
+  });
 
-    svg.call(zoom);
-
-    const g = svg.append("g");
-
-    const simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink(data.links).id(d => d.id).distance(150))
-      .force("charge", d3.forceManyBody().strength(-400))
-      .force("center", d3.forceCenter(width / 2, height / 2));
-
-    const link = g.append("g")
-      .attr("stroke", "#888")
-      .attr("stroke-width", 1.5)
-      .selectAll("line")
-      .data(data.links)
-      .join("line");
-
-    const node = g.append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
-      .selectAll("circle")
-      .data(data.nodes)
-      .join("circle")
-        .attr("r", 15)
-        .attr("fill", d => d3.schemeCategory10[d.group % 10])
-        .call(drag(simulation));
-
-    const label = g.append("g")
-      .selectAll("text")
-      .data(data.nodes)
-      .join("text")
-      .text(d => d.id)
-      .attr("dy", 4)
-      .attr("dx", 18);
-
-    simulation.on("tick", () => {
-      link
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y);
-
-      node
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y);
-
-      label
-        .attr("x", d => d.x)
-        .attr("y", d => d.y);
-    });
-
-    function drag(simulation){
-      function dragstarted(event, d) {
-        if(!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
-      }
-      function dragged(event, d){
-        d.fx = event.x; d.fy = event.y;
-      }
-      function dragended(event, d){
-        if(!event.active) simulation.alphaTarget(0);
-        d.fx = null; d.fy = null;
-      }
-      return d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended);
+function renderPage() {
+  pdfDoc.getPage(pageNum).then(page => {
+    const viewport = page.getViewport({ scale });
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(offset.x, offset.y);
+    const renderTask = page.render({ canvasContext: ctx, viewport });
+    renderTask.onProgress = function(progress) {
+      loader.innerText = `Loading PDF: ${Math.round(progress.loaded / progress.total * 100)}%`;
     }
+    renderTask.promise.then(() => {
+      loader.style.display = 'none';
+    });
+  });
+}
+
+function zoomIn() { scale += 0.2; renderPage(); }
+function zoomOut() { if (scale > 0.4) { scale -= 0.2; renderPage(); }}
+function resetZoom() { scale = 1.0; offset = { x: 0, y: 0 }; renderPage(); }
+
+// Drag to move
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStart = { x: e.clientX - offset.x, y: e.clientY - offset.y };
+});
+canvas.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  offset = { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y };
+  renderPage();
+});
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+// Scroll to zoom
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY * -0.001;
+  scale += delta;
+  scale = Math.min(Math.max(0.5, scale), 5);
+  renderPage();
 });
 </script>
 </body>
