@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Site Stats</title>
     <style>
         body {
             background-color: black;
@@ -22,20 +22,23 @@
             font-size: 2em;
         }
         p {
-            margin-bottom: 40px;
+            margin: 10px 0;
             font-size: 1.2em;
             color: #ccc;
         }
+        .highlight {
+            color: #ffcc00; /* make latest update stand out */
+        }
         .button {
             display: inline-block;
-            padding: 15px 30px;
-            margin: 15px;
-            font-size: 18px;
+            padding: 12px 25px;
+            margin-top: 30px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
             background-color: #444;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
             cursor: pointer;
             transition: 0.3s;
@@ -46,12 +49,12 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to the Main Page</h1>
-    <p>Website version: V0.8.3 | Timezone: BST | Update: Fixed the vpnmap maybe?</p>
-    
-    <a href="https://gooper.net/stinky.html" class="button">Secret Teller</a>
-    <a href="vpnmap.html" class="button">VPN Map (Who Owns Who)</a>
-    <a href="temp.page.html" class="button">What happened to our old site?</a>
-    <a href="stats.html" class="button">Stats</a>
+    <h1>Site Stats</h1>
+    <p>Website version: <strong>V0.8.5</strong></p>
+    <p>Timezone: <strong>BST</strong></p>
+    <p>Total changes since launch: <strong>84</strong></p>
+    <p class="highlight">Latest update: Fixed the vpnmap maybe?</p>
+
+    <a href="mainpage.html" class="button">Back to Main Page</a>
 </body>
 </html>
