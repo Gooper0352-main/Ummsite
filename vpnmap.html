@@ -32,9 +32,7 @@
         transform-origin: 0 0;
         cursor: grab;
     }
-    canvas:active {
-        cursor: grabbing;
-    }
+    canvas:active { cursor: grabbing; }
 
     /* ✅ Loading Overlay */
     #loading-overlay {
@@ -66,6 +64,11 @@
         background: #00ffcc;
         transition: width 0.2s;
     }
+    #status-text {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #ccc;
+    }
 </style>
 </head>
 <body>
@@ -80,6 +83,7 @@
     <div id="loading-overlay">
         <div>Loading VPN Map... <span id="progress-text">0%</span></div>
         <div id="progress-bar"><div id="progress-fill"></div></div>
+        <div id="status-text">Downloading...</div>
     </div>
 </div>
 
@@ -94,44 +98,48 @@ const container = document.getElementById('pdf-container');
 const loadingOverlay = document.getElementById('loading-overlay');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
+const statusText = document.getElementById('status-text');
 
-pdfjsLib.getDocument({
-    url: url,
-    rangeChunkSize: 65536, // 64KB chunks for faster progress updates
-}).promise.then(pdf => {
+// ✅ Download PDF with progress
+const loadingTask = pdfjsLib.getDocument({ url: url, rangeChunkSize: 65536 });
+
+loadingTask.onProgress = function(progressData) {
+    let percent = Math.floor((progressData.loaded / progressData.total) * 100);
+    progressFill.style.width = percent + '%';
+    progressText.textContent = percent + '%';
+};
+
+loadingTask.promise.then(pdf => {
     pdfDoc = pdf;
-    renderLowRes(); // Fast low-res preview first
-    renderPage(); // Full res after
-}, err => {
-    console.error(err);
-});
+    renderLowRes(); // Quick preview
+    renderPage();   // Full render after
+}).catch(err => console.error(err));
 
 function renderLowRes() {
     pdfDoc.getPage(pageNum).then(page => {
-        const viewport = page.getViewport({ scale: 0.4 }); // Fast low-res
+        const viewport = page.getViewport({ scale: 0.3 });
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         page.render({ canvasContext: ctx, viewport }).promise.then(() => {
-            console.log('Low-res preview done');
+            console.log('Low-res preview loaded');
         });
     });
 }
 
 function renderPage() {
-    showLoading();
+    statusText.textContent = 'Rendering full map...';
     pdfDoc.getPage(pageNum).then(page => {
-        const viewport = page.getViewport({ scale: 1 }); // Full quality
+        const viewport = page.getViewport({ scale: 1 });
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        const renderContext = { canvasContext: ctx, viewport };
-        page.render(renderContext).promise.then(() => {
+        const renderTask = page.render({ canvasContext: ctx, viewport });
+        renderTask.promise.then(() => {
             hideLoading();
             applyTransform();
         });
     });
 }
 
-function showLoading() { loadingOverlay.style.display = 'flex'; }
 function hideLoading() { loadingOverlay.style.display = 'none'; }
 
 function applyTransform() {
@@ -176,16 +184,6 @@ container.addEventListener('wheel', e => {
     }
     applyTransform();
 }, { passive: false });
-
-// ✅ Progress bar using PDF.js loading task
-pdfjsLib.getDocument({
-    url: url,
-    rangeChunkSize: 65536
-}).onProgress = function(progressData) {
-    let percent = Math.floor((progressData.loaded / progressData.total) * 100);
-    progressFill.style.width = percent + '%';
-    progressText.textContent = percent + '%';
-};
 </script>
 </body>
 </html>
