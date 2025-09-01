@@ -30,6 +30,10 @@
         left: 0;
         background: #222;
         transform-origin: 0 0;
+        cursor: grab;
+    }
+    canvas:active {
+        cursor: grabbing;
     }
 </style>
 </head>
@@ -78,6 +82,7 @@ function zoomIn() { zoom += 0.2; applyTransform(); }
 function zoomOut() { zoom = Math.max(0.2, zoom - 0.2); applyTransform(); }
 function resetView() { zoom = 1; panX = 0; panY = 0; applyTransform(); }
 
+// ✅ Drag to pan
 let isDragging = false, startX, startY;
 
 container.addEventListener('mousedown', e => {
@@ -92,6 +97,28 @@ container.addEventListener('mousemove', e => {
     applyTransform();
 });
 window.addEventListener('mouseup', () => isDragging = false);
+
+// ✅ Scroll to zoom (with focus on cursor)
+container.addEventListener('wheel', e => {
+    e.preventDefault();
+    const zoomFactor = 1.1;
+    const mouseX = e.clientX - container.offsetLeft;
+    const mouseY = e.clientY - container.offsetTop;
+
+    if (e.deltaY < 0) {
+        // zoom in
+        zoom *= zoomFactor;
+        panX = mouseX - (mouseX - panX) * zoomFactor;
+        panY = mouseY - (mouseY - panY) * zoomFactor;
+    } else {
+        // zoom out
+        zoom /= zoomFactor;
+        zoom = Math.max(0.2, zoom);
+        panX = mouseX - (mouseX - panX) / zoomFactor;
+        panY = mouseY - (mouseY - panY) / zoomFactor;
+    }
+    applyTransform();
+}, { passive: false });
 </script>
 </body>
 </html>
