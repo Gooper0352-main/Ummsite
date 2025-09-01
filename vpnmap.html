@@ -48,25 +48,6 @@
       color: white;
       font-size: 18px;
   }
-  #progress-bar {
-      width: 60%;
-      height: 20px;
-      background: #333;
-      border-radius: 10px;
-      margin-top: 10px;
-      overflow: hidden;
-  }
-  #progress-fill {
-      width: 0%;
-      height: 100%;
-      background: #00ffcc;
-      transition: width 0.2s;
-  }
-  #status-text {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #ccc;
-  }
 </style>
 </head>
 <body>
@@ -75,14 +56,12 @@
     <button onclick="zoomIn()">Zoom In</button>
     <button onclick="zoomOut()">Zoom Out</button>
     <button onclick="resetView()">Reset</button>
+    <button onclick="goToMain()">Back to Main Page</button>
 </div>
 <div id="pdf-container">
-    <canvas id="canvas-low"></canvas>
-    <canvas id="canvas-high"></canvas>
+    <canvas id="canvas-main"></canvas>
     <div id="loading-overlay">
-        <div>Loading VPN Map... <span id="progress-text">0%</span></div>
-        <div id="progress-bar"><div id="progress-fill"></div></div>
-        <div id="status-text">Downloading...</div>
+        Loading VPN Map...
     </div>
 </div>
 
@@ -92,87 +71,66 @@ const url = 'https://raw.githubusercontent.com/Gooper0352-main/Ummsite/main/vpnm
 
 let pdfDoc = null, pageNum = 1;
 let zoom = 1, panX = 0, panY = 0;
-const lowCanvas = document.getElementById('canvas-low');
-const lowCtx = lowCanvas.getContext('2d');
-const highCanvas = document.getElementById('canvas-high');
-const highCtx = highCanvas.getContext('2d');
+const canvas = document.getElementById('canvas-main');
+const ctx = canvas.getContext('2d');
 const container = document.getElementById('pdf-container');
 const loadingOverlay = document.getElementById('loading-overlay');
-const progressFill = document.getElementById('progress-fill');
-const progressText = document.getElementById('progress-text');
-const statusText = document.getElementById('status-text');
 
-// PDF download progress
-const loadingTask = pdfjsLib.getDocument({ url: url, rangeChunkSize: 65536 });
-loadingTask.onProgress = function(progressData){
-    let percent = Math.floor((progressData.loaded / progressData.total) * 100);
-    progressFill.style.width = percent + '%';
-    progressText.textContent = percent + '%';
-};
+// Offscreen canvas for high-res PDF
+const offCanvas = document.createElement('canvas');
+const offCtx = offCanvas.getContext('2d');
+
+const loadingTask = pdfjsLib.getDocument({ url: url });
 loadingTask.promise.then(pdf => {
     pdfDoc = pdf;
-    renderLowRes(); // show fast preview
+    renderPDFOnce();
 }).catch(err => console.error(err));
 
-// Low-res render
-function renderLowRes(){
+function renderPDFOnce() {
     pdfDoc.getPage(pageNum).then(page => {
-        const viewport = page.getViewport({ scale: 0.3 });
-        lowCanvas.width = viewport.width;
-        lowCanvas.height = viewport.height;
-        highCanvas.width = viewport.width;
-        highCanvas.height = viewport.height;
-
-        page.render({ canvasContext: lowCtx, viewport }).promise.then(()=>{
-            hideLoading(); // hide overlay immediately
-            statusText.textContent = 'Rendering high-res...';
-            renderHighRes(); // start high-res in background
-        });
-    });
-}
-
-// High-res render (progressive, replaces low-res visually)
-function renderHighRes(){
-    pdfDoc.getPage(pageNum).then(page=>{
+        // Full resolution
         const viewport = page.getViewport({ scale: 1 });
-        highCanvas.width = viewport.width;
-        highCanvas.height = viewport.height;
-        page.render({ canvasContext: highCtx, viewport }).promise.then(()=>{
-            statusText.textContent = ''; // done
+        offCanvas.width = viewport.width;
+        offCanvas.height = viewport.height;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        // Render PDF to offscreen canvas
+        page.render({ canvasContext: offCtx, viewport }).promise.then(() => {
+            // Copy offscreen canvas to visible canvas
+            ctx.drawImage(offCanvas, 0, 0);
+            loadingOverlay.style.display = 'none';
+            applyTransform(); // initial zoom/pan
         });
     });
 }
 
-function hideLoading(){ loadingOverlay.style.display='none'; }
-
-// Apply zoom & pan to both canvases
+// Apply zoom and pan via CSS transform
 function applyTransform(){
-    const transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
-    lowCanvas.style.transform = transform;
-    highCanvas.style.transform = transform;
+    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
 }
 
-function zoomIn(){ zoom+=0.2; applyTransform(); }
-function zoomOut(){ zoom = Math.max(0.2, zoom-0.2); applyTransform(); }
-function resetView(){ zoom=1; panX=0; panY=0; applyTransform(); }
+function zoomIn(){ zoom += 0.2; applyTransform(); }
+function zoomOut(){ zoom = Math.max(0.2, zoom - 0.2); applyTransform(); }
+function resetView(){ zoom = 1; panX = 0; panY = 0; applyTransform(); }
 
 // Drag to pan
-let isDragging=false, startX, startY;
-container.addEventListener('mousedown', e=>{
-    isDragging=true;
+let isDragging = false, startX, startY;
+container.addEventListener('mousedown', e => {
+    isDragging = true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
 });
-container.addEventListener('mousemove', e=>{
+container.addEventListener('mousemove', e => {
     if(!isDragging) return;
     panX = e.clientX - startX;
     panY = e.clientY - startY;
     applyTransform();
 });
-window.addEventListener('mouseup', ()=> isDragging=false);
+window.addEventListener('mouseup', () => isDragging = false);
 
-// Scroll wheel to zoom
-container.addEventListener('wheel', e=>{
+// Scroll wheel zoom
+container.addEventListener('wheel', e => {
     e.preventDefault();
     const zoomFactor = 1.1;
     const mouseX = e.clientX - container.offsetLeft;
@@ -182,7 +140,7 @@ container.addEventListener('wheel', e=>{
         zoom *= zoomFactor;
         panX = mouseX - (mouseX - panX) * zoomFactor;
         panY = mouseY - (mouseY - panY) * zoomFactor;
-    }else{
+    } else {
         zoom /= zoomFactor;
         zoom = Math.max(0.2, zoom);
         panX = mouseX - (mouseX - panX) / zoomFactor;
@@ -190,6 +148,11 @@ container.addEventListener('wheel', e=>{
     }
     applyTransform();
 },{passive:false});
+
+// Back to main page
+function goToMain(){
+    window.location.href = 'mainpage.html';
+}
 </script>
 </body>
 </html>
