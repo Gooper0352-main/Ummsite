@@ -2,18 +2,26 @@
 <html>
 <head>
   <meta charset="utf-8"/>
-  <title>Camera 2 Viewer</title>
-  <style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh}img{max-width:100%;max-height:100%}</style>
+  <title>Open Cameras</title>
+  <style>
+    body{background:#111;color:#fff;font-family:Arial;padding:30px;text-align:center}
+    .btn{display:inline-block;padding:14px 22px;margin:10px;background:#2d89ef;color:#fff;border-radius:8px;text-decoration:none}
+    .btn:hover{opacity:.9}
+    .note{color:#bbb;margin-top:18px;font-size:14px}
+    .link{display:block;margin-top:8px;color:#9be;font-word-break:break-all}
+  </style>
 </head>
 <body>
-  <img id="cam" src="" alt="Camera 2">
-  <script>
-    const url = 'http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745';
-    const img = document.getElementById('cam');
-    function reload(){ img.src = url + '&_=' + Date.now(); }
-    img.addEventListener('error', ()=> setTimeout(reload,2000));
-    img.addEventListener('load', ()=> setTimeout(reload,2000));
-    reload();
-  </script>
+  <h2>Open Cameras</h2>
+
+  <a class="btn" href="http://62.232.244.106:8082/mjpg/video.mjpg" target="_blank" rel="noopener noreferrer">CAMERA 1</a>
+  <a class="btn" href="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" target="_blank" rel="noopener noreferrer">Open CAMERA 2</a>
+
+  <div class="note">
+    If the image/tab shows “no data” at first, try reloading that new tab — some cameras need a fresh request or a moment to initialize.
+  </div>
+
+  <div class="link">
+  </div>
 </body>
 </html>
