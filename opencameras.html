@@ -17,24 +17,66 @@
       min-height: 100vh;
       padding: 20px;
     }
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+    .back-button {
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .back-button:hover {
+      background: #155ab6;
+    }
     h1 {
       font-size: 1.5rem;
       margin-bottom: 20px;
     }
-    .camera-container {
+    .camera-box {
       background: #14141a;
       border-radius: 12px;
       padding: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       display: inline-block;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .camera-container {
       position: relative;
     }
     img {
       display: block;
       width: 480px;
       max-width: 100%;
+      height: auto;
       border-radius: 12px;
       cursor: pointer;
+      background: #000;
+    }
+    .no-signal {
+      width: 480px;
+      max-width: 100%;
+      height: 270px;
+      background: #222;
+      color: #ff4d4d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      border-radius: 12px;
+    }
+    .camera-label {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #ccc;
     }
     .fullscreen {
       position: fixed;
@@ -64,9 +106,17 @@
   </style>
 </head>
 <body>
+  <div class="top-bar">
+    <a href="mainpage.html" class="back-button">Go Back to Main Page</a>
+  </div>
+
   <h1>Subway Camera</h1>
-  <div class="camera-container">
-    <img id="subwayCam" src="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1" alt="Subway Camera" />
+  <div class="camera-box">
+    <div class="camera-container">
+      <div id="noSignal" class="no-signal">No Signal</div>
+      <img id="subwayCam" src="" alt="Subway Camera" style="display:none;" />
+    </div>
+    <div class="camera-label">Subway Camera Feed</div>
   </div>
 
   <div id="fullscreenView" class="fullscreen" style="display:none;">
@@ -76,13 +126,26 @@
 
   <script>
     const img = document.getElementById('subwayCam');
+    const noSignal = document.getElementById('noSignal');
+    const feedUrl = 'http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1';
 
-    // Refresh image every 2 seconds
-    setInterval(() => {
-      img.src = `http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&_=${Date.now()}`;
-    }, 2000);
+    function updateImage() {
+      const newImg = new Image();
+      newImg.src = `${feedUrl}&_=${Date.now()}`;
+      newImg.onload = () => {
+        img.src = newImg.src;
+        img.style.display = 'block';
+        noSignal.style.display = 'none';
+      };
+      newImg.onerror = () => {
+        img.style.display = 'none';
+        noSignal.style.display = 'flex';
+      };
+    }
 
-    // Fullscreen click event
+    setInterval(updateImage, 3000);
+    updateImage();
+
     img.addEventListener('click', () => {
       const fsView = document.getElementById('fullscreenView');
       const fsImg = document.getElementById('fullscreenImg');
