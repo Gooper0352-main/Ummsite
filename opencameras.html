@@ -2,77 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Camera Feed</title>
+  <title>Open Cameras</title>
   <style>
     body {
-      background-color: black;
-      color: white;
-      text-align: center;
+      background-color: #111;
+      color: #fff;
       font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
     }
-    .container {
-      margin-top: 50px;
+    h1 {
+      margin-bottom: 20px;
     }
-    .image-box {
-      display: inline-block;
-      background-color: #222;
-      padding: 10px;
+    .camera-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .camera-box {
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    img, iframe {
+      max-width: 400px;
+      height: auto;
       border-radius: 10px;
     }
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-    .label {
+    .cam-name {
       margin-top: 10px;
-      font-size: 18px;
-    }
-    #placeholder {
-      font-size: 20px;
-      color: gray;
-    }
-    .top-button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-    }
-    .top-button:hover {
-      background: #666;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <h1>Live Camera Feeds</h1>
+  
+  <div class="camera-container">
+    <!-- First Camera -->
+    <div class="camera-box">
+      <img id="camera1" src="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" alt="Camera 1">
+      <div class="cam-name">Camera 1</div>
+    </div>
 
-<a href="mainpage.html" class="top-button">Go Back to Main Page</a>
-
-<div class="container">
-  <div class="image-box">
-    <img id="camera" src="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" alt="Camera Feed" onerror="showPlaceholder()">
-    <div id="placeholder">Loading...</div>
-    <div class="label">Live Camera Feed</div>
+    <!-- Second Camera -->
+    <div class="camera-box">
+      <img src="http://62.232.244.106:8082/mjpg/video.mjpg" alt="Uxbridge Camera">
+      <div class="cam-name">Uxbridge</div>
+    </div>
   </div>
-</div>
 
-<script>
-  const img = document.getElementById('camera');
-  const placeholder = document.getElementById('placeholder');
-
-  function showPlaceholder() {
-    placeholder.innerText = "No Signal";
-    // Try reloading image every 3 seconds
-    setTimeout(() => {
-      img.src = img.src.split('?')[0] + '?' + new Date().getTime();
+  <script>
+    // Auto-refresh first camera every 3 seconds
+    setInterval(() => {
+      const img = document.getElementById("camera1");
+      img.src = "http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&" + new Date().getTime();
     }, 3000);
-  }
-
-  img.onload = () => {
-    placeholder.style.display = 'none';
-  };
-</script>
-
+  </script>
 </body>
 </html>
