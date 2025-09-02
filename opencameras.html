@@ -1,29 +1,140 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Open Cameras</title>
-  <style>
-    body{background:#111;color:#fff;font-family:Arial;padding:30px;text-align:center}
-    .btn{display:inline-block;padding:14px 22px;margin:10px;background:#2d89ef;color:#fff;border-radius:8px;text-decoration:none}
-    .btn:hover{opacity:.9}
-    .note{color:#bbb;margin-top:18px;font-size:14px}
-    .link{display:block;margin-top:8px;color:#9be;font-word-break:break-all}
-  </style>
+<meta charset="UTF-8">
+<title>Open Cameras</title>
+<style>
+  body {
+    background-color: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  .top-bar {
+    margin-bottom: 20px;
+  }
+  .top-bar a {
+    text-decoration: none;
+    color: white;
+    background: #4cafef;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+  .camera-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+  .camera-box {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+    max-width: 400px;
+  }
+  .camera-box img, .camera-box iframe {
+    width: 100%;
+    border-radius: 10px;
+  }
+  .cam-name {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  /* Fullscreen overlay */
+  .fullscreen {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  .fullscreen img, .fullscreen iframe {
+    max-width: 95%;
+    max-height: 90%;
+    border-radius: 10px;
+  }
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <h2>Open Cameras</h2>
 
-  <a class="btn" href="http://62.232.244.106:8082/mjpg/video.mjpg" target="_blank" rel="noopener noreferrer">Open CAMERA 1 (Uxbridge MJPEG)</a>
-  <a class="btn" href="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" target="_blank" rel="noopener noreferrer">Open CAMERA 2 (Snapshot)</a>
+<div class="top-bar">
+  <a href="mainpage.html">Go Back to Main Page</a>
+</div>
 
-  <div class="note">
-    If the image/tab shows “no data” at first, try reloading that new tab — some cameras need a fresh request or a moment to initialize.
+<h1>Live Camera Feeds</h1>
+
+<div class="camera-container">
+  <!-- First Camera -->
+  <div class="camera-box" onclick="openFullscreen('camera1')">
+    <img id="camera1" src="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" alt="Camera 1">
+    <div class="cam-name">Camera 1</div>
   </div>
 
-  <div class="link">
-    CAMERA 1 URL: <a href="http://62.232.244.106:8082/mjpg/video.mjpg" target="_blank" rel="noopener noreferrer">http://62.232.244.106:8082/mjpg/video.mjpg</a><br>
-    CAMERA 2 URL: <a href="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" target="_blank" rel="noopener noreferrer">http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745</a>
+  <!-- Uxbridge Camera -->
+  <div class="camera-box" onclick="openFullscreen('camera2')">
+    <img id="camera2" src="http://62.232.244.106:8082/mjpg/video.mjpg" alt="Uxbridge">
+    <div class="cam-name">Uxbridge</div>
   </div>
+</div>
+
+<!-- Fullscreen overlay -->
+<div id="fullscreenOverlay" class="fullscreen" onclick="closeFullscreen()">
+  <span class="close-btn" onclick="closeFullscreen(event)">&times;</span>
+  <div id="fullscreenContent"></div>
+</div>
+
+<script>
+  // Auto-refresh first camera every 3 seconds
+  setInterval(() => {
+    const img1 = document.getElementById("camera1");
+    img1.src = "http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745&" + new Date().getTime();
+  }, 3000);
+
+  function openFullscreen(id) {
+    const overlay = document.getElementById('fullscreenOverlay');
+    const content = document.getElementById('fullscreenContent');
+    const original = document.getElementById(id);
+
+    // Clear previous content
+    content.innerHTML = '';
+
+    if(original.tagName.toLowerCase() === 'img'){
+      const img = document.createElement('img');
+      img.src = original.src;
+      content.appendChild(img);
+    } else if(original.tagName.toLowerCase() === 'iframe'){
+      const iframe = document.createElement('iframe');
+      iframe.src = original.src;
+      iframe.width = '100%';
+      iframe.height = '100%';
+      content.appendChild(iframe);
+    }
+
+    overlay.style.display = 'flex';
+  }
+
+  function closeFullscreen(event){
+    if(event) event.stopPropagation(); // prevent closing twice
+    document.getElementById('fullscreenOverlay').style.display = 'none';
+  }
+</script>
+
 </body>
 </html>
