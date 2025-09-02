@@ -1,161 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Open Cameras</title>
+  <meta charset="UTF-8">
+  <title>Camera Feed</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0b0f;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .top-bar {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 20px;
-    }
-    .back-button {
-      background: #1a73e8;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .back-button:hover {
-      background: #155ab6;
-    }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-    .camera-box {
-      background: #14141a;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      display: inline-block;
+      background-color: black;
+      color: white;
       text-align: center;
-      margin-bottom: 20px;
+      font-family: Arial, sans-serif;
     }
-    .camera-container {
-      position: relative;
+    .container {
+      margin-top: 50px;
+    }
+    .image-box {
+      display: inline-block;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 10px;
     }
     img {
-      display: block;
-      width: 480px;
       max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #000;
+      border-radius: 8px;
     }
-    .no-signal {
-      width: 480px;
-      max-width: 100%;
-      height: 270px;
-      background: #222;
-      color: #ff4d4d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      border-radius: 12px;
+    .label {
+      margin-top: 10px;
+      font-size: 18px;
     }
-    .camera-label {
-      margin-top: 8px;
-      font-size: 1rem;
-      color: #ccc;
+    #placeholder {
+      font-size: 20px;
+      color: gray;
     }
-    .fullscreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
+    .top-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #444;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
     }
-    .fullscreen img {
-      width: auto;
-      height: 90%;
-      max-width: 95%;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
+    .top-button:hover {
+      background: #666;
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <a href="mainpage.html" class="back-button">Go Back to Main Page</a>
+
+<a href="mainpage.html" class="top-button">Go Back to Main Page</a>
+
+<div class="container">
+  <div class="image-box">
+    <img id="camera" src="http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1&1756777745" alt="Camera Feed" onerror="showPlaceholder()">
+    <div id="placeholder">Loading...</div>
+    <div class="label">Live Camera Feed</div>
   </div>
+</div>
 
-  <h1>Subway Camera</h1>
-  <div class="camera-box">
-    <div class="camera-container">
-      <div id="noSignal" class="no-signal">No Signal</div>
-      <img id="subwayCam" src="" alt="Subway Camera" style="display:none;" />
-    </div>
-    <div class="camera-label">Subway Camera Feed</div>
-  </div>
+<script>
+  const img = document.getElementById('camera');
+  const placeholder = document.getElementById('placeholder');
 
-  <div id="fullscreenView" class="fullscreen" style="display:none;">
-    <span class="close-btn" onclick="closeFullscreen()">&times;</span>
-    <img id="fullscreenImg" src="" alt="Fullscreen View" />
-  </div>
+  function showPlaceholder() {
+    placeholder.innerText = "No Signal";
+    // Try reloading image every 3 seconds
+    setTimeout(() => {
+      img.src = img.src.split('?')[0] + '?' + new Date().getTime();
+    }, 3000);
+  }
 
-  <script>
-    const img = document.getElementById('subwayCam');
-    const noSignal = document.getElementById('noSignal');
-    const feedUrl = 'http://5.226.58.4:9003/jpgmulreq/1/image.jpg?key=1516975535684&lq=1';
+  img.onload = () => {
+    placeholder.style.display = 'none';
+  };
+</script>
 
-    function updateImage() {
-      const newImg = new Image();
-      newImg.src = `${feedUrl}&_=${Date.now()}`;
-      newImg.onload = () => {
-        img.src = newImg.src;
-        img.style.display = 'block';
-        noSignal.style.display = 'none';
-      };
-      newImg.onerror = () => {
-        img.style.display = 'none';
-        noSignal.style.display = 'flex';
-      };
-    }
-
-    setInterval(updateImage, 3000);
-    updateImage();
-
-    img.addEventListener('click', () => {
-      const fsView = document.getElementById('fullscreenView');
-      const fsImg = document.getElementById('fullscreenImg');
-      fsImg.src = img.src;
-      fsView.style.display = 'flex';
-    });
-
-    function closeFullscreen() {
-      document.getElementById('fullscreenView').style.display = 'none';
-    }
-  </script>
 </body>
 </html>
