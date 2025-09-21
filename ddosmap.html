@@ -7,27 +7,37 @@
     body {
       background-color: black;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      font-family: Arial, sans-serif;
     }
     .btn {
-      padding: 15px 30px;
-      background-color: #444;
+      padding: 15px 40px;
+      margin: 10px;
+      font-size: 20px;
+      font-weight: bold;
       color: white;
+      background: linear-gradient(90deg, #0f0, #0ff);
       border: none;
-      border-radius: 8px;
-      font-size: 18px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     .btn:hover {
-      background-color: #666;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #0ff;
     }
   </style>
 </head>
 <body>
-  <button class="btn" onclick="window.location.href='mainpage.html'">Back to Main Page</button>
+  <button class="btn" onclick="window.open('https://horizon.netscout.com/?kiosk=true&mapPosition=0.00~0.00~1.00', '_blank')">
+    Open Map →
+  </button>
+  <button class="btn" onclick="window.location.href='mainpage.html'">
+    Back to Main Page
+  </button>
 </body>
 </html>
