@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wingman Servers (RDP) Master</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --muted:#a6b0c3;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#020617 0%, var(--bg) 100%); color:#e6eef6}
+    .container{max-width:1200px;margin:28px auto;padding:20px;}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .meta{margin-top:12px;font-size:13px;color:var(--muted);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+    .btn {display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);color:#e6eef6}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .frame-wrap{margin-top:18px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .map-iframe{width:100%;height:70vh;border:0;display:block}
+    .fallback{padding:18px;background:var(--glass);color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .small{font-size:12px;color:var(--muted)}
+    @media (max-width:720px){
+      .map-iframe{height:56vh}
+      header{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Wingman Servers (RDP) Master</h1>
+          <p class="lead">Summary: <strong>SonyTrack Inc</strong> — 14 servers · <strong>Cloudflare Inc</strong> — 1000+ servers</p>
+          <div class="meta">
+            <span class="small">Page: wingman-servers.html</span>
+            <span class="small">Main page: <a class="btn secondary" href="temp.page.html">Back to main page</a></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a class="btn" href="temp.page.html">← Back to main page</a>
+          <a class="btn secondary" href="https://horizon.netscout.com/?kiosk=true&mapPosition=0.00~0.00~1.00" target="_blank" rel="noopener">Open map in new tab</a>
+        </div>
+      </header>
+
+      <div class="frame-wrap" aria-live="polite">
+        <!-- Try to embed the netscout "live DDoS map" in an iframe.
+             Note: many external sites block embedding with X-Frame-Options or CSP.
+             If the embed is blocked, use the fallback link below. -->
+        <iframe
+          class="map-iframe"
+          src="https://horizon.netscout.com/?kiosk=true&mapPosition=0.00~0.00~1.00"
+          title="Live DDoS Map — NETSCOUT Horizon"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+
+        <div class="fallback" id="fallback">
+          <div>
+            <strong>If the map above does not display, the external site may prevent embedding.</strong>
+            <div class="small" style="margin-top:6px">Click the button to open NETSCOUT Horizon in a new tab.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a class="btn" href="https://horizon.netscout.com/?kiosk=true&mapPosition=0.00~0.00~1.00" target="_blank" rel="noopener">Open NETSCOUT Horizon</a>
+          </div>
+        </div>
+      </div
+      </div>
+    </div>
+  </div>
+</body>
+</html>
