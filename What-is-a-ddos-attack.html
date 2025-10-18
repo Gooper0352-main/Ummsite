@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>What is a DDoS Attack?</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#9aa7b2;--glass: rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6eef6;background:linear-gradient(180deg,#071022 0%, #081428 60%);}
+    .wrap{max-width:900px;margin:40px auto;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(6,182,212,0.12)}
+    .logo svg{width:40px;height:40px}
+    h1{font-size:1.6rem;margin:0}
+    p.lead{color:var(--muted);margin:8px 0 18px}
+    section{background:var(--glass);padding:18px;border-radius:10px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.02)}
+    h2{margin:0 0 8px;color:#cfeffd}
+    ul{margin:8px 0 0 18px;color:var(--muted)}
+    code{background:#071827;padding:2px 6px;border-radius:6px;font-family:monospace;font-size:0.95em;color:#bfefff}
+    .note{font-size:0.9em;color:#ffdca8;background:rgba(255,220,168,0.04);padding:10px;border-radius:8px;border:1px solid rgba(255,220,168,0.06)}
+    footer{font-size:0.85em;color:var(--muted);text-align:center;margin-top:10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+    a{color:var(--accent);text-decoration:none}
+    .recommend{background:linear-gradient(90deg, rgba(6,182,212,0.06), rgba(124,58,237,0.04));padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div>
+        <h1>What is a DDoS Attack?</h1>
+        <p class="lead">A straightforward, human-friendly explanation of distributed denial-of-service attacks: what they are, how they affect systems, and approachable steps to reduce risk.</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>Quick definition</h2>
+      <p style="color:var(--muted)">A <strong>DDoS (Distributed Denial of Service)</strong> attack is when many computers or devices send huge amounts of traffic or requests to a website, app, or network to overwhelm it. The result is that legitimate users can't use the service — it becomes slow or completely unreachable.</p>
+    </section>
+
+    <section class="grid">
+      <div>
+        <h2>How it works (plain English)</h2>
+        <ul>
+          <li>Attackers direct lots of devices (commonly a botnet) to hit one target at the same time.</li>
+          <li>That flood can fill up bandwidth, crash services, or tie up server resources so real users can't get through.</li>
+          <li>Sometimes the traffic is random noise; sometimes it's crafted to exploit a weak part of the system.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>Common flavours</h2>
+        <ul>
+          <li><strong>Volumetric:</strong> massive amounts of data to saturate the network link.</li>
+          <li><strong>Protocol:</strong> abusing the way network protocols work to exhaust servers or firewalls.</li>
+          <li><strong>Application-layer:</strong> hitting specific app endpoints (like logins) so the app itself runs out of steam.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>How to spot one</h2>
+      <ul>
+        <li>Your site becomes slow or times out for many users at once.</li>
+        <li>Traffic metrics spike dramatically from many different IPs or countries.</li>
+        <li>Monitoring tools show saturated links, growing queues, or suddenly high error rates.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Practical protection — what teams do</h2>
+      <p style="color:var(--muted)">Below are practical, high-level protections commonly used by organisations. They’re deliberately non-technical so you can understand options when you speak with your host or security provider.</p>
+      <ul>
+        <li>Use a CDN or a managed DDoS mitigation service to absorb and filter attack traffic before it reaches your origin servers.</li>
+        <li>Apply rate limits and simple filters at the edge to drop obviously malicious requests.</li>
+        <li>Run a Web Application Firewall (WAF) for application-layer protection and caching to reduce load.</li>
+        <li>Keep an incident response plan and contact your host or ISP immediately if you see signs of an attack.</li>
+      </ul>
+
+      <div class="recommend" role="note" aria-live="polite">
+        <strong>Host recommendation:</strong>
+        <p style="margin:6px 0;color:var(--muted)">If you want a host that focuses on strong DDoS protection and fast incident support, consider using <strong>WINGMAN</strong> as your provider. WINGMAN positions itself as a host with built-in mitigation and responsive support channels — a good choice if uptime during an attack is a priority. (Always compare providers, ask for specifics about traffic scrubbing, and check real customer reviews before committing.)</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>What to do if you're hit</h2>
+      <ul>
+        <li>Contact your host or CDN immediately and give them timestamps and logs.</li>
+        <li>Follow their mitigation instructions — they can often route traffic through scrubbing centres quickly.</li>
+        <li>Avoid any retaliation. Retaliation is illegal and rarely helps.</li>
+      </ul>
+      <p class="note">This page exists to inform — not to instruct on how to launch attacks. Carrying out or assisting with DDoS attacks is illegal and unethical.</p>
+    </section>
+
+    <footer>
+      <div>Updated: October 18, 2025 • Made by Wingman to protect you!</div>
+    </footer>
+  </main>
+</body>
+</html>
