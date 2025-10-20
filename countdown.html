@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Countdown Timer</title>
+<style>
+  body {
+    background-color: black;
+    color: red;
+    font-family: 'Digital-7', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  @font-face {
+    font-family: 'Digital-7';
+    src: local('Digital-7'),
+         url('https://fonts.cdnfonts.com/s/13454/Digital7Mono-B1g5.woff') format('woff');
+  }
+
+  .timer {
+    font-size: 50px; /* smaller text size */
+    letter-spacing: 15px; /* spacing between characters */
+    display: flex;
+    align-items: center;
+    gap: 40px; /* spacing between each time unit */
+    transform: scale(0.8); /* shrink whole display slightly */
+  }
+
+  .digit {
+    display: inline-block;
+    perspective: 200px;
+  }
+
+  .flip {
+    display: inline-block;
+    transform-origin: top;
+    animation: flipDown 0.4s ease;
+  }
+
+  @keyframes flipDown {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(-90deg); opacity: 0.7; }
+    100% { transform: rotateX(0deg); opacity: 1; }
+  }
+
+  .sep {
+    font-size: 50px;
+  }
+</style>
+</head>
+<body>
+  <div class="timer">
+    <span class="digit" id="m">00</span>
+    <span class="sep">|</span>
+    <span class="digit" id="d">00</span>
+    <span class="sep">|</span>
+    <span class="digit" id="h">00</span>
+    <span class="sep">|</span>
+    <span class="digit" id="min">00</span>
+    <span class="sep">|</span>
+    <span class="digit" id="s">00</span>
+  </div>
+
+<script>
+  const targetDate = new Date("January 22, 2026 00:00:00").getTime();
+
+  function flip(element, newValue) {
+    if (element.textContent !== newValue) {
+      element.classList.remove("flip");
+      void element.offsetWidth;
+      element.textContent = newValue;
+      element.classList.add("flip");
+    }
+  }
+
+  function updateTimer() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+      document.querySelectorAll('.digit').forEach(d => d.textContent = "00");
+      return;
+    }
+
+    const months = Math.floor(distance / (1000 * 60 * 60 * 24 * 30.44));
+    const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    flip(document.getElementById("m"), String(months).padStart(2, "0"));
+    flip(document.getElementById("d"), String(days).padStart(2, "0"));
+    flip(document.getElementById("h"), String(hours).padStart(2, "0"));
+    flip(document.getElementById("min"), String(minutes).padStart(2, "0"));
+    flip(document.getElementById("s"), String(seconds).padStart(2, "0"));
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+</script>
+</body>
+</html>
