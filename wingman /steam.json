@@ -1,4 +1,6 @@
-steamcommunity.com/login/home:Klashfeick:ccpp4343KK
+{
+  "steam accounts": [
+    steamcommunity.com/login/home:Klashfeick:ccpp4343KK
 help.steampowered.com/es/wizard/HelpWithLoginInfoReset:EMPTY:Barto1357
 help.steampowered.com/en/wizard/HelpWithLoginInfoReset:izzuddindwiiswantiarno@gmail.com:korenakal23!
 steamcommunity.com/openid/loginform:Carrito_popito:katinelis1@
@@ -42154,3 +42156,5 @@ riseofflight.com/account/registration/steam/:FuuDod:Moth572
 help.steampowered.com/es/login:iedwin11:edwin1317
 steamcommunity.com/login/home:Kriskriscool:Kristupas123
 steamcommunity.com/openid/loginform:zyno_2145:RafaFezi2001
+  ]
+}
