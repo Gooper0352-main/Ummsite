@@ -1,27 +1,25 @@
-"SERVER DETAILS": "Dell EMC PowerEdge R240 2LFF Server ",: 
-
-"CPU": "Intel Xeon E-2226G 3.4Ghz 6 core",
-
 {
+  "SERVER DETAILS": "Dell EMC PowerEdge R240 2LFF Server",
+  "CPU": "Intel Xeon E-2226G 3.4Ghz 6 core",
   "servers": 16,
   "total_storage": "1 TB",
-  "total_ram": "516 GB",
+  "total_ram": "1 TB",
   "per_server": [
-    { "name": "SERVER 1", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 2", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 3", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 4", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 5", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 6", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 7", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 8", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 9", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 10", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 11", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 12", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 13", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 14", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 15", "storage": "64 GB", "ram": "32.25 GB" },
-    { "name": "SERVER 16", "storage": "64 GB", "ram": "32.25 GB" }
+    { "name": "SERVER 1", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 2", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 3", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 4", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 5", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 6", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 7", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 8", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 9", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 10", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 11", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 12", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 13", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 14", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 15", "storage": "64 GB", "ram": "64 GB" },
+    { "name": "SERVER 16", "storage": "64 GB", "ram": "64 GB" }
   ]
 }
