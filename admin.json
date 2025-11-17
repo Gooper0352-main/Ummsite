@@ -1,3 +1,3 @@
 [
-  {"found":"AA CREATOR","room_code":"PIXEL","user_name":"AABADGE","players":"10/10"},{"found":"AA CREATOR 2","room_code":"TEST1","user_name":"PLAYERX","players":"5/10"},{"found":"AA CREATOR","room_code":"RYANVR","user_name":"GAVIN","players":"10/10"}
+  {"found":"AA CREATOR","room_code":"RYANVR","user":{"name":"GAVIN","id":"548AAFF893488577","color":{"pc":[0,113,255],"quest":[0,4,9]}},"room_details":{"region":"US","players":"10/10","map_info":"privateDEFAULTCasual"}}
 ]
