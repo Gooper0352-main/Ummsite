@@ -1,3 +1,3 @@
 [
-  {"found":"AA CREATOR","room_code":"RYANVR","user":"GAVIN"{"name":"GAVIN","id":"548AAFF893488577","color":{"pc":[0,113,255],"quest":[0,4,9]}},"room_details":{"region":"US","players":"10/10","map_info":"privateDEFAULTCasual"}}
+  {"found":"AA CREATOR","room_code":"RYANVR","user":{"name":"GAVIN","id":"548AAFF893488577","color":{"pc":[0,113,255],"quest":[0,4,9]}},"room_details":{"region":"US","players":"10/10","map_info":"privateDEFAULTCasual"}}
 ]
