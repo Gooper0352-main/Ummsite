@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile</title>
+
+<style>
+    body {
+        background: #000;
+        margin: 0;
+        font-family: monospace;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .card {
+        width: 800px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid #ff3fb5;
+        padding: 40px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 0 20px #ff3fb5;
+    }
+
+    .profile-title {
+        font-size: 40px;
+        font-weight: bold;
+        letter-spacing: 5px;
+        text-shadow: 0 0 15px #ff3fb5, 0 0 30px #ff3fb5;
+    }
+
+    .badges {
+        margin-top: 15px;
+        display: inline-flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        background: rgba(0,0,0,0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    .badge {
+        background: #111;
+        border: 1px solid #fff;
+        padding: 5px 8px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+
+    hr {
+        border: none;
+        height: 1px;
+        margin: 30px 0;
+        background: #ff3fb5;
+    }
+
+    .stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        background: #111;
+        width: fit-content;
+        margin: auto;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .links img {
+        width: 26px;
+        margin: 0 10px;
+        cursor: pointer;
+        filter: drop-shadow(0 0 5px cyan);
+        transition: 0.2s;
+    }
+    .links img:hover {
+        transform: scale(1.15);
+    }
+
+    .pages {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 40px;
+        font-size: 17px;
+        cursor: pointer;
+    }
+
+    .footer-controls {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .circle {
+        width: 10px;
+        height: 10px;
+        background: #888;
+        border-radius: 50%;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="profile-title">Gooper0352</div>
+    <div class="badges">
+        <div class="badge">Staff</div>
+        <div class="badge">Owner</div>
+        <div class="badge">Admin</div>
+        <div class="badge">Developer</div>
+        <div class="badge">Verified</div>
+    </div>
+
+    <p style="margin-top:30px;font-size:16px;">print("Hello World!")</p>
+
+    <hr>
+
+    <div class="stats">
+        48 Viewers
+    </div>
+
+
+    <div class="footer-controls">
+        <div class="circle"></div>
+        Made by Gooper0352
+        <div class="circle"></div>
+    </div>
+</div>
+
+</body>
+</html>
