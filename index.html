@@ -106,7 +106,7 @@
                     const statuses = [
                         { label: "You", status: "Working", detail: "Browser" },
                         { label: city, status: "Working", detail: "Goopers Servers" },
-                        { label: "https://gooper.net", status: "Working", detail: "Host" }
+                        { label: "https://gooper.net", status: "Error", detail: "Host" }
                     ];
 
                     statuses.forEach(s => {
@@ -148,7 +148,7 @@
     function fallbackRender(userIP) {
         const statuses = [
             { label: "You", status: "Working", detail: "Browser" },
-            { label: "London", status: "Error", detail: "Goopers Servers" },
+            { label: "London", status: "Working", detail: "Goopers Servers" },
             { label: "https://gooper.net", status: "Error", detail: "Host" }
         ];
 
