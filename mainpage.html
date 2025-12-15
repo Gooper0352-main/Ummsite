@@ -66,7 +66,7 @@
 <div class="subtitle">Service Unavailable</div>
 
 <div class="container" id="status-container">
-    <!-- Boxes dynamically inserted here -->
+
 </div>
 
 <div class="ip-display" id="ip-display">
@@ -78,31 +78,26 @@
     const ipDisplay = document.getElementById("ip-display");
     const utcTimeSpan = document.getElementById("utc-time");
 
-    // Function to get current UTC time as string
     function getUTCTime() {
         return new Date().toUTCString().replace("GMT", "UTC");
     }
 
-    // Set initial UTC time and update every second
     function updateTime() {
         utcTimeSpan.textContent = getUTCTime();
     }
     updateTime();
     setInterval(updateTime, 1000);
 
-    // Fetch IP
     fetch("https://api.ipify.org?format=json")
         .then(res => res.json())
         .then(ipData => {
             const userIP = ipData.ip || "Unknown IP";
 
-            // Get city info using ipwhois.app
             fetch(`https://ipwhois.app/json/${userIP}`)
                 .then(res => res.json())
                 .then(geoData => {
                     const city = geoData.city || "London";
 
-                    // Render status boxes
                     const statuses = [
                         { label: "You", status: "Working", detail: "Browser" },
                         { label: city, status: "Error", detail: "Goopers Servers" },
@@ -132,10 +127,8 @@
                         container.appendChild(box);
                     });
 
-                    // Show IP on click
                     ipDisplay.addEventListener("click", () => {
                         ipDisplay.innerHTML = `Your IP: ${userIP} • UTC: <span id="utc-time">${getUTCTime()}</span>`;
-                        // Keep updating UTC
                         setInterval(() => {
                             document.getElementById("utc-time").textContent = getUTCTime();
                         }, 1000);
