@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Error 503</title>
+<title>Error 521</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
     body {
@@ -62,8 +62,8 @@
 </head>
 <body>
 
-<h1>Error 503</h1>
-<div class="subtitle">Service Unavailable</div>
+<h1>Error 521</h1>
+<div class="subtitle">Web server is down</div>
 
 <div class="container" id="status-container">
 
@@ -100,7 +100,7 @@
 
                     const statuses = [
                         { label: "You", status: "Working", detail: "Browser" },
-                        { label: city, status: "Error", detail: "Goopers Servers" },
+                        { label: city, status: "Working", detail: "Goopers Servers" },
                         { label: "https://gooper.net", status: "Error", detail: "Host" }
                     ];
 
@@ -141,7 +141,7 @@
     function fallbackRender(userIP) {
         const statuses = [
             { label: "You", status: "Working", detail: "Browser" },
-            { label: "London", status: "Error", detail: "Goopers Servers" },
+            { label: "London", status: "Working", detail: "Goopers Servers" },
             { label: "https://gooper.net", status: "Error", detail: "Host" }
         ];
 
