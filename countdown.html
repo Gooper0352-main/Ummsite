@@ -85,10 +85,8 @@
     <span class="sep">|</span>
   </div>
 
-  <!-- Unmute Music Button -->
   <button onclick="unmuteYT()">Wingman Radio Connect/Disconnect</button>
 
-  <!-- Invisible YouTube audio -->
   <iframe
       id="yt-audio"
       style="display:none;"
@@ -134,10 +132,8 @@
   updateTimer();
   setInterval(updateTimer, 1000);
 
-  // Function to unmute the YouTube video
   function unmuteYT() {
     const yt = document.getElementById('yt-audio');
-    // Reload iframe with mute=0
     yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
   }
 </script>
