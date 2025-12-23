@@ -9,6 +9,7 @@
     color: red;
     font-family: 'Digital-7', monospace;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -28,6 +29,7 @@
     align-items: center;
     gap: 40px;
     transform: scale(0.8);
+    margin-bottom: 25px;
   }
 
   .digit {
@@ -50,29 +52,46 @@
   .sep {
     font-size: 50px;
   }
+
+  button {
+    font-family: 'Digital-7', monospace;
+    font-size: 22px;
+    padding: 10px 30px;
+    color: red;
+    background: black;
+    border: 2px solid red;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: red;
+    color: black;
+  }
 </style>
 </head>
 <body>
 
-  <div class="timer">
-    <span class="sep">|</span>
-    <span class="digit" id="d">00</span>
-    <span class="sep">|</span>
-    <span class="digit" id="h">00</span>
-    <span class="sep">|</span>
-    <span class="digit" id="min">00</span>
-    <span class="sep">|</span>
-    <span class="digit" id="s">00</span>
-    <span class="sep">|</span>
-  </div>
+<div class="timer">
+  <span class="sep">|</span>
+  <span class="digit" id="d">00</span>
+  <span class="sep">|</span>
+  <span class="digit" id="h">00</span>
+  <span class="sep">|</span>
+  <span class="digit" id="min">00</span>
+  <span class="sep">|</span>
+  <span class="digit" id="s">00</span>
+  <span class="sep">|</span>
+</div>
 
-  <iframe
-    id="yt-audio"
-    style="display:none"
-    src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
-    allow="autoplay"
-    frameborder="0">
-  </iframe>
+<button id="playBtn">Play Music</button>
+
+<iframe
+  id="yt"
+  style="display:none"
+  src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
+  allow="autoplay"
+  frameborder="0">
+</iframe>
 
 <script>
   const targetDate = new Date("January 22, 2026 00:00:00").getTime();
@@ -87,22 +106,15 @@
   }
 
   function updateTimer() {
-    const now = Date.now();
-    let distance = targetDate - now;
+    let t = targetDate - Date.now();
+    if (t < 0) t = 0;
 
-    if (distance < 0) {
-      document.querySelectorAll(".digit").forEach(d => d.textContent = "00");
-      return;
-    }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    distance %= 1000 * 60 * 60 * 24;
-
-    const hours = Math.floor(distance / (1000 * 60 * 60));
-    distance %= 1000 * 60 * 60;
-
-    const minutes = Math.floor(distance / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const days = Math.floor(t / 86400000);
+    t %= 86400000;
+    const hours = Math.floor(t / 3600000);
+    t %= 3600000;
+    const minutes = Math.floor(t / 60000);
+    const seconds = Math.floor((t % 60000) / 1000);
 
     flip(d, String(days).padStart(2, "0"));
     flip(h, String(hours).padStart(2, "0"));
@@ -113,12 +125,14 @@
   updateTimer();
   setInterval(updateTimer, 1000);
 
-  let unlocked = false;
-  document.addEventListener("click", () => {
-    if (unlocked) return;
-    yt-audio.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
-    unlocked = true;
-  }, { once: true });
+  let playing = false;
+  document.getElementById("playBtn").onclick = () => {
+    const yt = document.getElementById("yt");
+    if (!playing) {
+      yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
+      playing = true;
+    }
+  };
 </script>
 
 </body>
