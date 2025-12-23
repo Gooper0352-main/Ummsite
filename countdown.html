@@ -23,13 +23,13 @@
   }
 
   .timer {
-    font-size: 50px; /* smaller text size */
-    letter-spacing: 15px; /* spacing between characters */
+    font-size: 50px;
+    letter-spacing: 15px;
     display: flex;
     align-items: center;
-    gap: 40px; /* spacing between each time unit */
-    transform: scale(0.8); /* shrink whole display slightly */
-    margin-bottom: 20px; /* space for button */
+    gap: 40px;
+    transform: scale(0.8);
+    margin-bottom: 20px;
   }
 
   .digit {
@@ -70,6 +70,7 @@
 </style>
 </head>
 <body>
+
   <div class="timer">
     <span class="sep">|</span>
     <span class="digit" id="m">00</span>
@@ -84,13 +85,13 @@
     <span class="sep">|</span>
   </div>
 
-  <!-- Play/Pause Button -->
-  <button onclick="toggleYT()">Play/Pause Music</button>
+  <!-- Unmute Music Button -->
+  <button onclick="unmuteYT()">Play Music</button>
 
-  <!-- Invisible YouTube audio/video -->
+  <!-- Invisible YouTube audio -->
   <iframe
       id="yt-audio"
-      style="display: none;"
+      style="display:none;"
       src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
       allow="autoplay"
       frameborder="0">
@@ -133,20 +134,13 @@
   updateTimer();
   setInterval(updateTimer, 1000);
 
-  // Play/Pause YouTube
-  let ytPlaying = true; // initially autoplay muted
-  function toggleYT() {
-    const yt = document.getElementById("yt-audio");
-    const src = yt.src;
-    if (ytPlaying) {
-      // Stop by removing src
-      yt.src = "";
-      ytPlaying = false;
-    } else {
-      yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs";
-      ytPlaying = true;
-    }
+  // Function to unmute the YouTube video
+  function unmuteYT() {
+    const yt = document.getElementById('yt-audio');
+    // Reload iframe with mute=0
+    yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
   }
 </script>
+
 </body>
 </html>
