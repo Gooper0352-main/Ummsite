@@ -9,7 +9,6 @@
     color: red;
     font-family: 'Digital-7', monospace;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -29,7 +28,6 @@
     align-items: center;
     gap: 40px;
     transform: scale(0.8);
-    margin-bottom: 20px;
   }
 
   .digit {
@@ -52,21 +50,6 @@
   .sep {
     font-size: 50px;
   }
-
-  button {
-    font-family: 'Digital-7', monospace;
-    font-size: 20px;
-    padding: 10px 20px;
-    color: red;
-    background-color: black;
-    border: 2px solid red;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background-color: red;
-    color: black;
-  }
 </style>
 </head>
 <body>
@@ -83,57 +66,59 @@
     <span class="sep">|</span>
   </div>
 
-  <button onclick="unmuteYT()">Wingman Radio Connect/Disconnect</button>
-
   <iframe
-      id="yt-audio"
-      style="display:none;"
-      src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
-      allow="autoplay"
-      frameborder="0">
+    id="yt-audio"
+    style="display:none"
+    src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
+    allow="autoplay"
+    frameborder="0">
   </iframe>
 
 <script>
   const targetDate = new Date("January 22, 2026 00:00:00").getTime();
 
-  function flip(element, newValue) {
-    if (element.textContent !== newValue) {
-      element.classList.remove("flip");
-      void element.offsetWidth;
-      element.textContent = newValue;
-      element.classList.add("flip");
+  function flip(el, val) {
+    if (el.textContent !== val) {
+      el.classList.remove("flip");
+      void el.offsetWidth;
+      el.textContent = val;
+      el.classList.add("flip");
     }
   }
 
   function updateTimer() {
-    const now = new Date().getTime();
-    const distance = targetDate - now;
+    const now = Date.now();
+    let distance = targetDate - now;
 
     if (distance < 0) {
-      document.querySelectorAll('.digit').forEach(d => d.textContent = "00");
+      document.querySelectorAll(".digit").forEach(d => d.textContent = "00");
       return;
     }
 
-    const months = Math.floor(distance / (1000 * 60 * 60 * 24 * 30.44));
-    const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    distance %= 1000 * 60 * 60 * 24;
+
+    const hours = Math.floor(distance / (1000 * 60 * 60));
+    distance %= 1000 * 60 * 60;
+
+    const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    flip(document.getElementById("m"), String(months).padStart(2, "0"));
-    flip(document.getElementById("d"), String(days).padStart(2, "0"));
-    flip(document.getElementById("h"), String(hours).padStart(2, "0"));
-    flip(document.getElementById("min"), String(minutes).padStart(2, "0"));
-    flip(document.getElementById("s"), String(seconds).padStart(2, "0"));
+    flip(d, String(days).padStart(2, "0"));
+    flip(h, String(hours).padStart(2, "0"));
+    flip(min, String(minutes).padStart(2, "0"));
+    flip(s, String(seconds).padStart(2, "0"));
   }
 
   updateTimer();
   setInterval(updateTimer, 1000);
 
-  function unmuteYT() {
-    const yt = document.getElementById('yt-audio');
-    yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
-  }
+  let unlocked = false;
+  document.addEventListener("click", () => {
+    if (unlocked) return;
+    yt-audio.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=0&playlist=2f8IIQt8ajs";
+    unlocked = true;
+  }, { once: true });
 </script>
 
 </body>
