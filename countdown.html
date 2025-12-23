@@ -9,6 +9,7 @@
     color: red;
     font-family: 'Digital-7', monospace;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -28,6 +29,7 @@
     align-items: center;
     gap: 40px; /* spacing between each time unit */
     transform: scale(0.8); /* shrink whole display slightly */
+    margin-bottom: 20px; /* space for button */
   }
 
   .digit {
@@ -50,6 +52,21 @@
   .sep {
     font-size: 50px;
   }
+
+  button {
+    font-family: 'Digital-7', monospace;
+    font-size: 20px;
+    padding: 10px 20px;
+    color: red;
+    background-color: black;
+    border: 2px solid red;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: red;
+    color: black;
+  }
 </style>
 </head>
 <body>
@@ -66,6 +83,18 @@
     <span class="digit" id="s">00</span>
     <span class="sep">|</span>
   </div>
+
+  <!-- Play/Pause Button -->
+  <button onclick="toggleYT()">Play/Pause Music</button>
+
+  <!-- Invisible YouTube audio/video -->
+  <iframe
+      id="yt-audio"
+      style="display: none;"
+      src="https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs"
+      allow="autoplay"
+      frameborder="0">
+  </iframe>
 
 <script>
   const targetDate = new Date("January 22, 2026 00:00:00").getTime();
@@ -103,6 +132,21 @@
 
   updateTimer();
   setInterval(updateTimer, 1000);
+
+  // Play/Pause YouTube
+  let ytPlaying = true; // initially autoplay muted
+  function toggleYT() {
+    const yt = document.getElementById("yt-audio");
+    const src = yt.src;
+    if (ytPlaying) {
+      // Stop by removing src
+      yt.src = "";
+      ytPlaying = false;
+    } else {
+      yt.src = "https://www.youtube.com/embed/2f8IIQt8ajs?autoplay=1&loop=1&mute=1&playlist=2f8IIQt8ajs";
+      ytPlaying = true;
+    }
+  }
 </script>
 </body>
 </html>
