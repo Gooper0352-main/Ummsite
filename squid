@@ -3,15 +3,19 @@
 <head>
     <title>Go to Site</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
         .btn {
             display: inline-block;
-            padding: 12px 20px;
+            padding: 14px 24px;
             background-color: #4CAF50;
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 18px;
-            font-family: Arial, sans-serif;
+            font-size: 20px;
         }
         .btn:hover {
             background-color: #45a049;
@@ -19,6 +23,8 @@
     </style>
 </head>
 <body>
-    <a class="btn" href="https://sites.google.com/view/goopersunblockedgames">Go to Gooper's Unblocked Games</a>
+    <a class="btn" href="https://sites.google.com/view/goopersunblockedgames">
+        Go to Gooper's Unblocked Games
+    </a>
 </body>
 </html>
