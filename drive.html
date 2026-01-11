@@ -20,21 +20,14 @@ body {
     box-shadow: 0 0 25px rgba(0,0,0,0.6);
 }
 
-.titlebar {
-    background: #2d2d30;
-    padding: 8px 12px;
-    font-size: 14px;
-}
-
+.titlebar { background: #2d2d30; padding: 8px 12px; }
 .toolbar {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #1f1f1f;
+    gap: 8px;
     padding: 6px 10px;
+    background: #1f1f1f;
     border-bottom: 1px solid #333;
 }
-
 button {
     background: #3a3a3a;
     color: #fff;
@@ -42,114 +35,47 @@ button {
     padding: 5px 10px;
     cursor: pointer;
 }
+.status { margin-left: auto; font-size: 12px; }
 
-button:hover {
-    background: #4a4a4a;
-}
-
-.status {
-    margin-left: auto;
-    font-size: 12px;
-    color: #cfcfcf;
-}
-
-.content {
-    display: flex;
-    height: 420px;
-}
-
+.content { display: flex; height: 420px; }
 .sidebar {
     width: 200px;
     background: #2a2a2a;
     border-right: 1px solid #333;
     padding: 10px;
-    font-size: 13px;
 }
+.files { flex: 1; padding: 10px; }
 
-.sidebar div {
-    margin-bottom: 6px;
-    color: #bbb;
-}
-
-.files {
-    flex: 1;
-    padding: 10px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-th {
-    text-align: left;
-    color: #bdbdbd;
-    border-bottom: 1px solid #333;
-    padding: 6px;
-}
-
-td {
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td {
     padding: 6px;
     border-bottom: 1px solid #2f2f2f;
     cursor: pointer;
 }
+tr:hover { background: #333; }
 
-tr:hover {
-    background: #333;
-}
-
-.icon {
-    width: 18px;
-    display: inline-block;
-    text-align: center;
-    margin-right: 6px;
-}
-
+.icon { width: 18px; display: inline-block; margin-right: 6px; }
 .folder { color: #e8c547; }
-.txt { color: #cccccc; }
+.file { color: #4aa3ff; }
+.txt { color: #ccc; }
 .mp4 { color: #ff5555; }
 
-.footer {
-    border-top: 1px solid #333;
-    padding: 10px;
-    font-size: 12px;
-}
-
-.bar {
-    background: #333;
-    height: 14px;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 6px;
-}
-
-.used {
-    background: #4aa3ff;
-    width: 1%;
-    height: 100%;
-}
-
-/* Popup */
 .popup {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     display: none;
     align-items: center;
     justify-content: center;
 }
-
 .popup-box {
     background: #2d2d30;
     border: 1px solid #555;
     padding: 20px;
-    width: 380px;
-}
-
-.popup-box button {
-    margin-top: 15px;
-    float: right;
+    max-width: 700px;
+    max-height: 500px;
+    overflow: auto;
+    text-align: center;
 }
 </style>
 </head>
@@ -160,8 +86,8 @@ tr:hover {
     <div class="titlebar">File Explorer</div>
 
     <div class="toolbar">
-        <button onclick="goBack()">⬅ Back</button>
-        <button onclick="triggerUpload()">Upload</button>
+        <button onclick="goBack()">← Back</button>
+        <button onclick="triggerUpload()">Upload File</button>
         <span class="status" id="status">Ready</span>
         <input type="file" id="uploadInput" hidden>
     </div>
@@ -170,7 +96,6 @@ tr:hover {
         <div class="sidebar">
             <div>This PC</div>
             <div>Local Disk (Z:)</div>
-            <div>Network</div>
         </div>
 
         <div class="files">
@@ -180,96 +105,203 @@ tr:hover {
 
     <div class="footer">
         Used: <strong>13.1 TB</strong> | Free: <strong>1.2969 PB (99%)</strong>
-        <div class="bar"><div class="used"></div></div>
-        Capacity: 1.31 Petabytes
     </div>
 </div>
 
-<!-- Popup -->
-<div class="popup" id="popup">
+<!-- Denied -->
+<div class="popup" id="denied">
     <div class="popup-box">
         <strong>Access Denied</strong>
-        <p>You don’t have permission to view this file.<br>
-        Please contact your administrator.</p>
-        <button onclick="closePopup()">OK</button>
+        <p>You don’t have permission to view this file.</p>
+        <button onclick="closeDenied()">OK</button>
+    </div>
+</div>
+
+<!-- Viewer -->
+<div class="popup" id="viewer">
+    <div class="popup-box" id="viewerBox"></div>
+</div>
+
+<!-- Admin notification -->
+<div class="popup" id="notify">
+    <div class="popup-box">
+        <strong>Administrator has accepted your file.</strong><br><br>
+        <button onclick="closeNotify()">OK</button>
+    </div>
+</div>
+
+<!-- Delete confirmation -->
+<div class="popup" id="confirmDelete">
+    <div class="popup-box">
+        <p>Are you sure you want to delete this file?</p>
+        <button id="yesDelete">Yes</button>
+        <button onclick="closeConfirm()">No</button>
     </div>
 </div>
 
 <script>
+const table = document.getElementById("fileTable");
 const uploadInput = document.getElementById("uploadInput");
 const statusText = document.getElementById("status");
-const table = document.getElementById("fileTable");
+const viewer = document.getElementById("viewer");
+const viewerBox = document.getElementById("viewerBox");
+const notify = document.getElementById("notify");
+const confirmDelete = document.getElementById("confirmDelete");
+const yesDeleteBtn = document.getElementById("yesDelete");
 
-let currentView = "root";
+let userFolder = localStorage.getItem("userFolder");
+let userFiles = JSON.parse(localStorage.getItem("userFiles") || "[]");
+let deleteIndex = null;
 
 function triggerUpload() {
     uploadInput.click();
 }
 
 uploadInput.addEventListener("change", () => {
-    if (uploadInput.files.length > 0) {
-        statusText.textContent = "Waiting for administrator approval…";
+    const file = uploadInput.files[0];
+    if (!file) return;
+
+    if (!userFolder) {
+        userFolder = "User" + Math.floor(Math.random() * 900000 + 100000);
+        localStorage.setItem("userFolder", userFolder);
     }
+
+    statusText.textContent = "Waiting for administrator…";
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        setTimeout(() => {
+            userFiles.push({
+                name: file.name,
+                type: file.type || "application/octet-stream",
+                data: reader.result
+            });
+            localStorage.setItem("userFiles", JSON.stringify(userFiles));
+            statusText.textContent = "Approved";
+            notify.style.display = "flex";
+            loadRoot();
+        }, 5000);
+    };
+    reader.readAsDataURL(file);
 });
 
-function noPermission() {
-    document.getElementById("popup").style.display = "flex";
-}
-
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
-
-function renderRoot() {
-    currentView = "root";
-    table.innerHTML = `
-        <tr>
-            <th>Name</th><th>Type</th><th>Size</th>
-        </tr>
+function loadRoot() {
+    let html = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
         <tr onclick="openLogs()">
             <td><span class="icon folder">📁</span>Logs</td>
             <td>File folder</td>
             <td>—</td>
         </tr>
-        <tr onclick="noPermission()">
+        <tr onclick="deny()">
             <td><span class="icon folder">📁</span>Projects</td>
             <td>File folder</td>
             <td>—</td>
-        </tr>
-        <tr onclick="noPermission()">
-            <td><span class="icon folder">📁</span>Backups</td>
-            <td>File folder</td>
+        </tr>`;
+
+    if (userFiles.length > 0) {
+        html += `<tr onclick="openUser()">
+            <td><span class="icon folder">📁</span>${userFolder}</td>
+            <td>User Folder</td>
             <td>—</td>
-        </tr>
-    `;
+        </tr>`;
+    }
+
+    table.innerHTML = html;
 }
 
 function openLogs() {
-    currentView = "logs";
-    table.innerHTML = `
-        <tr>
-            <th>Name</th><th>Type</th><th>Size</th>
-        </tr>
-        <tr onclick="noPermission()">
-            <td><span class="icon txt">📄</span>system_01.txt</td>
+    table.innerHTML = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+        <tr onclick="deny()">
+            <td><span class="icon txt">📄</span>system_log.txt</td>
             <td>Text Document</td>
             <td>0.1 TB</td>
         </tr>
-        <tr onclick="noPermission()">
+        <tr onclick="deny()">
             <td><span class="icon mp4">🎥</span>secret.mp4</td>
             <td>MP4 Video</td>
             <td>13.0 TB</td>
-        </tr>
+        </tr>`;
+}
+
+function openUser() {
+    let html = `<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;
+    userFiles.forEach((f, i) => {
+        html += `<tr>
+            <td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td>
+            <td>${f.type}</td>
+            <td>—</td>
+            <td><button onclick="confirmDeleteFile(event, ${i})">Delete</button></td>
+        </tr>`;
+    });
+    table.innerHTML = html;
+}
+
+function openFile(i) {
+    const f = userFiles[i];
+    let preview = "<p>Preview not available.</p>";
+
+    if (f.type.startsWith("image/"))
+        preview = `<img src="${f.data}" style="max-width:100%">`;
+    else if (f.type.startsWith("text/") || f.type === "application/pdf")
+        preview = `<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;
+    else if (f.type.startsWith("video/"))
+        preview = `<video src="${f.data}" controls style="max-width:100%"></video>`;
+    else if (f.type.startsWith("audio/"))
+        preview = `<audio src="${f.data}" controls></audio>`;
+
+    viewerBox.innerHTML = `
+        ${preview}<br><br>
+        <a href="${f.data}" download="${f.name}">
+            <button>Download</button>
+        </a>
+        <button onclick="closeViewer()">Close</button>
     `;
+    viewer.style.display = "flex";
 }
 
-function goBack() {
-    if (currentView === "logs") {
-        renderRoot();
+function confirmDeleteFile(event, i) {
+    event.stopPropagation();
+    deleteIndex = i;
+    confirmDelete.style.display = "flex";
+}
+
+yesDeleteBtn.addEventListener("click", () => {
+    if (deleteIndex !== null) {
+        userFiles.splice(deleteIndex, 1);
+        localStorage.setItem("userFiles", JSON.stringify(userFiles));
+        deleteIndex = null;
+        confirmDelete.style.display = "none";
+        // Remove folder if empty
+        if (userFiles.length === 0) {
+            userFolder = null;
+            localStorage.removeItem("userFolder");
+        }
+        loadRoot();
     }
+});
+
+function closeConfirm() {
+    confirmDelete.style.display = "none";
+    deleteIndex = null;
 }
 
-renderRoot();
+function deny() {
+    document.getElementById("denied").style.display = "flex";
+}
+function closeDenied() {
+    document.getElementById("denied").style.display = "none";
+}
+function closeViewer() {
+    viewer.style.display = "none";
+}
+function closeNotify() {
+    notify.style.display = "none";
+}
+function goBack() {
+    loadRoot();
+}
+
+loadRoot();
 </script>
 
 </body>
