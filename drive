@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>File Explorer</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: #1e1e1e;
+    color: #eaeaea;
+}
+
+.explorer {
+    width: 950px;
+    margin: 40px auto;
+    background: #252526;
+    border: 1px solid #3c3c3c;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+.titlebar {
+    background: #2d2d30;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1f1f1f;
+    padding: 6px 10px;
+    border-bottom: 1px solid #333;
+}
+
+button {
+    background: #3a3a3a;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4a4a4a;
+}
+
+.status {
+    margin-left: auto;
+    font-size: 12px;
+    color: #cfcfcf;
+}
+
+.content {
+    display: flex;
+    height: 420px;
+}
+
+.sidebar {
+    width: 200px;
+    background: #2a2a2a;
+    border-right: 1px solid #333;
+    padding: 10px;
+    font-size: 13px;
+}
+
+.sidebar div {
+    margin-bottom: 6px;
+    color: #bbb;
+}
+
+.files {
+    flex: 1;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th {
+    text-align: left;
+    color: #bdbdbd;
+    border-bottom: 1px solid #333;
+    padding: 6px;
+}
+
+td {
+    padding: 6px;
+    border-bottom: 1px solid #2f2f2f;
+    cursor: pointer;
+}
+
+tr:hover {
+    background: #333;
+}
+
+.icon {
+    width: 18px;
+    display: inline-block;
+    text-align: center;
+    margin-right: 6px;
+}
+
+.folder { color: #e8c547; }
+.txt { color: #cccccc; }
+.mp4 { color: #ff5555; }
+
+.footer {
+    border-top: 1px solid #333;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.bar {
+    background: #333;
+    height: 14px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.used {
+    background: #4aa3ff;
+    width: 1%;
+    height: 100%;
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-box {
+    background: #2d2d30;
+    border: 1px solid #555;
+    padding: 20px;
+    width: 380px;
+}
+
+.popup-box button {
+    margin-top: 15px;
+    float: right;
+}
+</style>
+</head>
+
+<body>
+
+<div class="explorer">
+    <div class="titlebar">File Explorer</div>
+
+    <div class="toolbar">
+        <button onclick="goBack()">⬅ Back</button>
+        <button onclick="triggerUpload()">Upload</button>
+        <span class="status" id="status">Ready</span>
+        <input type="file" id="uploadInput" hidden>
+    </div>
+
+    <div class="content">
+        <div class="sidebar">
+            <div>This PC</div>
+            <div>Local Disk (Z:)</div>
+            <div>Network</div>
+        </div>
+
+        <div class="files">
+            <table id="fileTable"></table>
+        </div>
+    </div>
+
+    <div class="footer">
+        Used: <strong>13.1 TB</strong> | Free: <strong>1.2969 PB (99%)</strong>
+        <div class="bar"><div class="used"></div></div>
+        Capacity: 1.31 Petabytes
+    </div>
+</div>
+
+<!-- Popup -->
+<div class="popup" id="popup">
+    <div class="popup-box">
+        <strong>Access Denied</strong>
+        <p>You don’t have permission to view this file.<br>
+        Please contact your administrator.</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
+<script>
+const uploadInput = document.getElementById("uploadInput");
+const statusText = document.getElementById("status");
+const table = document.getElementById("fileTable");
+
+let currentView = "root";
+
+function triggerUpload() {
+    uploadInput.click();
+}
+
+uploadInput.addEventListener("change", () => {
+    if (uploadInput.files.length > 0) {
+        statusText.textContent = "Waiting for administrator approval…";
+    }
+});
+
+function noPermission() {
+    document.getElementById("popup").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+function renderRoot() {
+    currentView = "root";
+    table.innerHTML = `
+        <tr>
+            <th>Name</th><th>Type</th><th>Size</th>
+        </tr>
+        <tr onclick="openLogs()">
+            <td><span class="icon folder">📁</span>Logs</td>
+            <td>File folder</td>
+            <td>—</td>
+        </tr>
+        <tr onclick="noPermission()">
+            <td><span class="icon folder">📁</span>Projects</td>
+            <td>File folder</td>
+            <td>—</td>
+        </tr>
+        <tr onclick="noPermission()">
+            <td><span class="icon folder">📁</span>Backups</td>
+            <td>File folder</td>
+            <td>—</td>
+        </tr>
+    `;
+}
+
+function openLogs() {
+    currentView = "logs";
+    table.innerHTML = `
+        <tr>
+            <th>Name</th><th>Type</th><th>Size</th>
+        </tr>
+        <tr onclick="noPermission()">
+            <td><span class="icon txt">📄</span>system_01.txt</td>
+            <td>Text Document</td>
+            <td>0.1 TB</td>
+        </tr>
+        <tr onclick="noPermission()">
+            <td><span class="icon mp4">🎥</span>secret.mp4</td>
+            <td>MP4 Video</td>
+            <td>13.0 TB</td>
+        </tr>
+    `;
+}
+
+function goBack() {
+    if (currentView === "logs") {
+        renderRoot();
+    }
+}
+
+renderRoot();
+</script>
+
+</body>
+</html>
