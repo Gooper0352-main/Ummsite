@@ -56,7 +56,6 @@ tr:hover { background: #333; }
 
 .icon { width: 18px; display: inline-block; margin-right: 6px; }
 .folder { color: #e8c547; }
-.file { color: #4aa3ff; }
 .txt { color: #ccc; }
 .mp4 { color: #ff5555; }
 
@@ -77,6 +76,12 @@ tr:hover { background: #333; }
     overflow: auto;
     text-align: center;
 }
+
+.footer {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-top: 1px solid #333;
+}
 </style>
 </head>
 
@@ -87,9 +92,7 @@ tr:hover { background: #333; }
 
     <div class="toolbar">
         <button onclick="goBack()">← Back</button>
-        <button onclick="triggerUpload()">Upload File</button>
-        <span class="status" id="status">Ready</span>
-        <input type="file" id="uploadInput" hidden>
+        <span class="status">System Online</span>
     </div>
 
     <div class="content">
@@ -103,12 +106,9 @@ tr:hover { background: #333; }
         </div>
     </div>
 
-    <div class="footer">
-        Used: <strong>13.1 TB</strong> | Free: <strong>1.2969 PB (99%)</strong>
-    </div>
+    <div class="footer" id="storage"></div>
 </div>
 
-<!-- Denied -->
 <div class="popup" id="denied">
     <div class="popup-box">
         <strong>Access Denied</strong>
@@ -117,190 +117,120 @@ tr:hover { background: #333; }
     </div>
 </div>
 
-<!-- Viewer -->
-<div class="popup" id="viewer">
-    <div class="popup-box" id="viewerBox"></div>
-</div>
-
-<!-- Admin notification -->
-<div class="popup" id="notify">
-    <div class="popup-box">
-        <strong>Administrator has accepted your file.</strong><br><br>
-        <button onclick="closeNotify()">OK</button>
-    </div>
-</div>
-
-<!-- Delete confirmation -->
-<div class="popup" id="confirmDelete">
-    <div class="popup-box">
-        <p>Are you sure you want to delete this file?</p>
-        <button id="yesDelete">Yes</button>
-        <button onclick="closeConfirm()">No</button>
-    </div>
-</div>
-
 <script>
 const table = document.getElementById("fileTable");
-const uploadInput = document.getElementById("uploadInput");
-const statusText = document.getElementById("status");
-const viewer = document.getElementById("viewer");
-const viewerBox = document.getElementById("viewerBox");
-const notify = document.getElementById("notify");
-const confirmDelete = document.getElementById("confirmDelete");
-const yesDeleteBtn = document.getElementById("yesDelete");
+const storageEl = document.getElementById("storage");
 
-let userFolder = localStorage.getItem("userFolder");
-let userFiles = JSON.parse(localStorage.getItem("userFiles") || "[]");
-let deleteIndex = null;
+/* ---------- STORAGE CONFIG ---------- */
+const TOTAL_STORAGE_TB = 1320; // ~1.29 PB
+let usedStorageTB = 13.1;
 
-function triggerUpload() {
-    uploadInput.click();
+/* ---------- ES STATE ---------- */
+let esLogs = [];
+let esInterval = null;
+
+/* ---------- STORAGE UI ---------- */
+function updateStorage() {
+    const free = TOTAL_STORAGE_TB - usedStorageTB;
+    const percent = ((usedStorageTB / TOTAL_STORAGE_TB) * 100).toFixed(2);
+
+    storageEl.innerHTML = `
+        Used: <strong>${usedStorageTB.toFixed(2)} TB</strong> |
+        Free: <strong>${free.toFixed(2)} TB (${(100 - percent).toFixed(2)}%)</strong>
+    `;
 }
 
-uploadInput.addEventListener("change", () => {
-    const file = uploadInput.files[0];
-    if (!file) return;
-
-    if (!userFolder) {
-        userFolder = "User" + Math.floor(Math.random() * 900000 + 100000);
-        localStorage.setItem("userFolder", userFolder);
-    }
-
-    statusText.textContent = "Waiting for administrator…";
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        setTimeout(() => {
-            userFiles.push({
-                name: file.name,
-                type: file.type || "application/octet-stream",
-                data: reader.result
-            });
-            localStorage.setItem("userFiles", JSON.stringify(userFiles));
-            statusText.textContent = "Approved";
-            notify.style.display = "flex";
-            loadRoot();
-        }, 5000);
-    };
-    reader.readAsDataURL(file);
-});
-
+/* ---------- ROOT ---------- */
 function loadRoot() {
-    let html = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
-        <tr onclick="openLogs()">
-            <td><span class="icon folder">📁</span>Logs</td>
-            <td>File folder</td>
-            <td>—</td>
-        </tr>
-        <tr onclick="deny()">
-            <td><span class="icon folder">📁</span>Projects</td>
-            <td>File folder</td>
-            <td>—</td>
-        </tr>`;
+    stopES();
+    table.innerHTML = `
+    <tr><th>Name</th><th>Type</th><th>Size</th></tr>
+    <tr onclick="openES()">
+        <td><span class="icon folder">📁</span>ES</td>
+        <td>File folder</td>
+        <td>—</td>
+    </tr>
+    <tr onclick="openLogs()">
+        <td><span class="icon folder">📁</span>Logs</td>
+        <td>File folder</td>
+        <td>—</td>
+    </tr>
+    <tr onclick="deny()">
+        <td><span class="icon folder">📁</span>Projects</td>
+        <td>File folder</td>
+        <td>—</td>
+    </tr>`;
+}
 
-    if (userFiles.length > 0) {
-        html += `<tr onclick="openUser()">
-            <td><span class="icon folder">📁</span>${userFolder}</td>
-            <td>User Folder</td>
-            <td>—</td>
-        </tr>`;
+/* ---------- ES ---------- */
+function openES() {
+    renderES();
+
+    if (!esInterval) {
+        esInterval = setInterval(() => {
+            const size = +(Math.random() * 80 + 1).toFixed(2);
+            const name = "LOG_" + Math.floor(1000000000 + Math.random() * 9000000000);
+
+            esLogs.unshift({ name, size });
+            usedStorageTB += size;
+
+            if (esLogs.length > 300) esLogs.pop();
+            updateStorage();
+            renderES();
+        }, 1000);
     }
-
-    table.innerHTML = html;
 }
 
-function openLogs() {
-    table.innerHTML = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+function renderES() {
+    let html = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>`;
+    esLogs.forEach(log => {
+        html += `
         <tr onclick="deny()">
-            <td><span class="icon txt">📄</span>system_log.txt</td>
-            <td>Text Document</td>
-            <td>0.1 TB</td>
-        </tr>
-        <tr onclick="deny()">
-            <td><span class="icon mp4">🎥</span>secret.mp4</td>
-            <td>MP4 Video</td>
-            <td>13.0 TB</td>
-        </tr>`;
-}
-
-function openUser() {
-    let html = `<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;
-    userFiles.forEach((f, i) => {
-        html += `<tr>
-            <td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td>
-            <td>${f.type}</td>
-            <td>—</td>
-            <td><button onclick="confirmDeleteFile(event, ${i})">Delete</button></td>
+            <td><span class="icon txt">📄</span>${log.name}</td>
+            <td>System Log</td>
+            <td>${log.size} GB</td>
         </tr>`;
     });
     table.innerHTML = html;
 }
 
-function openFile(i) {
-    const f = userFiles[i];
-    let preview = "<p>Preview not available.</p>";
-
-    if (f.type.startsWith("image/"))
-        preview = `<img src="${f.data}" style="max-width:100%">`;
-    else if (f.type.startsWith("text/") || f.type === "application/pdf")
-        preview = `<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;
-    else if (f.type.startsWith("video/"))
-        preview = `<video src="${f.data}" controls style="max-width:100%"></video>`;
-    else if (f.type.startsWith("audio/"))
-        preview = `<audio src="${f.data}" controls></audio>`;
-
-    viewerBox.innerHTML = `
-        ${preview}<br><br>
-        <a href="${f.data}" download="${f.name}">
-            <button>Download</button>
-        </a>
-        <button onclick="closeViewer()">Close</button>
-    `;
-    viewer.style.display = "flex";
-}
-
-function confirmDeleteFile(event, i) {
-    event.stopPropagation();
-    deleteIndex = i;
-    confirmDelete.style.display = "flex";
-}
-
-yesDeleteBtn.addEventListener("click", () => {
-    if (deleteIndex !== null) {
-        userFiles.splice(deleteIndex, 1);
-        localStorage.setItem("userFiles", JSON.stringify(userFiles));
-        deleteIndex = null;
-        confirmDelete.style.display = "none";
-        // Remove folder if empty
-        if (userFiles.length === 0) {
-            userFolder = null;
-            localStorage.removeItem("userFolder");
-        }
-        loadRoot();
+function stopES() {
+    if (esInterval) {
+        clearInterval(esInterval);
+        esInterval = null;
     }
-});
-
-function closeConfirm() {
-    confirmDelete.style.display = "none";
-    deleteIndex = null;
 }
 
+/* ---------- OTHER ---------- */
+function openLogs() {
+    stopES();
+    table.innerHTML = `
+    <tr><th>Name</th><th>Type</th><th>Size</th></tr>
+    <tr onclick="deny()">
+        <td><span class="icon txt">📄</span>system_log.txt</td>
+        <td>Text Document</td>
+        <td>0.1 TB</td>
+    </tr>
+    <tr onclick="deny()">
+        <td><span class="icon mp4">🎥</span>secret.mp4</td>
+        <td>MP4 Video</td>
+        <td>13.0 TB</td>
+    </tr>`;
+}
+
+/* ---------- UI ---------- */
 function deny() {
     document.getElementById("denied").style.display = "flex";
 }
 function closeDenied() {
     document.getElementById("denied").style.display = "none";
 }
-function closeViewer() {
-    viewer.style.display = "none";
-}
-function closeNotify() {
-    notify.style.display = "none";
-}
 function goBack() {
     loadRoot();
 }
 
+/* ---------- INIT ---------- */
+updateStorage();
 loadRoot();
 </script>
 
