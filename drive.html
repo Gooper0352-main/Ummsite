@@ -1,315 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>File Explorer</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      background: #1e1e1e;
-      color: #eaeaea;
-    }
-    .explorer {
-      width: 950px;
-      margin: 40px auto;
-      background: #252526;
-      border: 1px solid #3c3c3c;
-      box-shadow: 0 0 25px rgba(0,0,0,0.6);
-    }
-    .titlebar { background: #2d2d30; padding: 8px 12px; }
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      padding: 6px 10px;
-      background: #1f1f1f;
-      border-bottom: 1px solid #333;
-    }
-    button {
-      background: #3a3a3a;
-      color: #fff;
-      border: 1px solid #555;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    .status { margin-left: auto; font-size: 12px; }
-    .content { display: flex; height: 420px; }
-    .sidebar {
-      width: 200px;
-      background: #2a2a2a;
-      border-right: 1px solid #333;
-      padding: 10px;
-    }
-    .files { flex: 1; padding: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 6px; border-bottom: 1px solid #2f2f2f; cursor: pointer; }
-    tr:hover { background: #333; }
-    .icon { width: 18px; display: inline-block; margin-right: 6px; }
-    .folder { color: #e8c547; }
-    .file { color: #4aa3ff; }
-    .txt { color: #ccc; }
-    .mp4 { color: #ff5555; }
-    .popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .popup-box {
-      background: #2d2d30;
-      border: 1px solid #555;
-      padding: 20px;
-      max-width: 700px;
-      max-height: 500px;
-      overflow: auto;
-      text-align: center;
-    }
-    .footer { padding: 6px 10px; font-size: 12px; border-top: 1px solid #333; }
-  </style>
+<meta charset="UTF-8" />
+<title>File Explorer</title>
+<style>
+body { margin: 0; font-family: "Segoe UI", Tahoma, sans-serif; background: #1e1e1e; color: #eaeaea; }
+.explorer { width: 950px; margin: 40px auto; background: #252526; border: 1px solid #3c3c3c; box-shadow: 0 0 25px rgba(0,0,0,0.6); }
+.titlebar { background: #2d2d30; padding: 8px 12px; }
+.toolbar { display: flex; gap: 8px; padding: 6px 10px; background: #1f1f1f; border-bottom: 1px solid #333; }
+button { background: #3a3a3a; color: #fff; border: 1px solid #555; padding: 5px 10px; cursor: pointer; }
+.status { margin-left: auto; font-size: 12px; }
+.content { display: flex; height: 420px; }
+.sidebar { width: 200px; background: #2a2a2a; border-right: 1px solid #333; padding: 10px; }
+.files { flex: 1; padding: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 6px; border-bottom: 1px solid #2f2f2f; cursor: pointer; }
+tr:hover { background: #333; }
+.icon { width: 18px; display: inline-block; margin-right: 6px; }
+.folder { color: #e8c547; }
+.file { color: #4aa3ff; }
+.txt { color: #ccc; }
+.mp4 { color: #ff5555; }
+.popup { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; }
+.popup-box { background: #2d2d30; border: 1px solid #555; padding: 20px; max-width: 700px; max-height: 500px; overflow: auto; text-align: center; }
+.footer { padding: 6px 10px; font-size: 12px; border-top: 1px solid #333; }
+</style>
 </head>
 <body>
-
 <div class="explorer">
-  <div class="titlebar">File Explorer</div>
-
-  <div class="toolbar">
-    <button onclick="showLogin()">Login</button>
-    <button onclick="goBack()">← Back</button>
-    <button onclick="triggerUpload()">Upload File</button>
-    <span class="status" id="status">Ready</span>
-    <input type="file" id="uploadInput" hidden />
-  </div>
-
-  <div class="content">
-    <div class="sidebar">
-      <div>This PC</div>
-      <div>Local Disk (Z:)</div>
-    </div>
-    <div class="files">
-      <table id="fileTable"></table>
-    </div>
-  </div>
-
-  <div class="footer">
-    Used: <strong>13.1 TB</strong> | Free: <strong>1.2969 PB (99%)</strong>
-  </div>
+<div class="titlebar">File Explorer</div>
+<div class="toolbar">
+<button onclick="showLogin()">Login</button>
+<button onclick="goBack()">← Back</button>
+<button onclick="triggerUpload()">Upload File</button>
+<span class="status" id="status">Ready</span>
+<input type="file" id="uploadInput" hidden />
 </div>
-
-<!-- Login popup -->
-<div class="popup" id="loginPopup">
-  <div class="popup-box">
-    <strong>Administrator Login</strong><br><br>
-    <input type="password" id="adminPass" placeholder="Password" style="padding:6px;width:80%"><br><br>
-    <div id="loginStatus" style="color:#ff5555;font-size:13px"></div><br>
-    <button onclick="attemptLogin()">Login</button>
-    <button onclick="closeLogin()">Cancel</button>
-  </div>
+<div class="content">
+<div class="sidebar">
+<div>This PC</div>
+<div>Local Disk (Z:)</div>
+</div>
+<div class="files">
+<table id="fileTable"></table>
+</div>
+</div>
+<div class="footer">Used: <strong>13.1 TB</strong> | Free: <strong>1.2969 PB (99%)</strong></div>
 </div>
 
 <!-- Popups -->
-<div class="popup" id="denied">
-  <div class="popup-box">
-    <strong>Access Denied</strong>
-    <p>You don’t have permission to view this file.</p>
-    <button onclick="closeDenied()">OK</button>
-  </div>
-</div>
-
-<div class="popup" id="viewer">
-  <div class="popup-box" id="viewerBox"></div>
-</div>
-
-<div class="popup" id="notify">
-  <div class="popup-box">
-    <strong>Administrator has accepted your file.</strong><br /><br />
-    <button onclick="closeNotify()">OK</button>
-  </div>
-</div>
-
-<div class="popup" id="confirmDelete">
-  <div class="popup-box">
-    <p>Are you sure you want to delete this file?</p>
-    <button id="yesDelete">Yes</button>
-    <button onclick="closeConfirm()">No</button>
-  </div>
-</div>
+<div class="popup" id="denied"><div class="popup-box"><strong>Access Denied</strong><p>You don’t have permission to view this file.</p><button onclick="closeDenied()">OK</button></div></div>
+<div class="popup" id="viewer"><div class="popup-box" id="viewerBox"></div></div>
+<div class="popup" id="notify"><div class="popup-box"><strong>Administrator has accepted your file.</strong><br><br><button onclick="closeNotify()">OK</button></div></div>
+<div class="popup" id="confirmDelete"><div class="popup-box"><p>Are you sure you want to delete this file?</p><button id="yesDelete">Yes</button><button onclick="closeConfirm()">No</button></div></div>
+<div class="popup" id="loginPopup"><div class="popup-box"><strong>Administrator Login</strong><br><br><input type="password" id="adminPass" placeholder="Password" style="padding:6px;width:80%"><br><br><div id="loginStatus" style="color:#ff5555;font-size:13px"></div><br><button onclick="attemptLogin()">Login</button><button onclick="closeLogin()">Cancel</button></div></div>
 
 <script>
-  const table = document.getElementById("fileTable");
-  const uploadInput = document.getElementById("uploadInput");
-  const statusText = document.getElementById("status");
-  const viewer = document.getElementById("viewer");
-  const viewerBox = document.getElementById("viewerBox");
-  const notify = document.getElementById("notify");
-  const confirmDelete = document.getElementById("confirmDelete");
-  const yesDeleteBtn = document.getElementById("yesDelete");
+const table=document.getElementById("fileTable");
+const uploadInput=document.getElementById("uploadInput");
+const statusText=document.getElementById("status");
+const viewer=document.getElementById("viewer");
+const viewerBox=document.getElementById("viewerBox");
+const notify=document.getElementById("notify");
+const confirmDelete=document.getElementById("confirmDelete");
+const yesDeleteBtn=document.getElementById("yesDelete");
+let userFolder=localStorage.getItem("userFolder");
+let userFiles=JSON.parse(localStorage.getItem("userFiles")||"[]");
+let deleteIndex=null;
 
-  let userFolder = localStorage.getItem("userFolder");
-  let userFiles = JSON.parse(localStorage.getItem("userFiles") || "[]");
-  let deleteIndex = null;
+function triggerUpload(){uploadInput.click();}
+uploadInput.addEventListener("change",()=>{const file=uploadInput.files[0];if(!file)return;if(!userFolder){userFolder="User"+Math.floor(Math.random()*900000+100000);localStorage.setItem("userFolder",userFolder);}statusText.textContent="Waiting for administrator…";const reader=new FileReader();reader.onload=()=>{setTimeout(()=>{userFiles.push({name:file.name,type:file.type||"application/octet-stream",data:reader.result});localStorage.setItem("userFiles",JSON.stringify(userFiles));statusText.textContent="Approved";notify.style.display="flex";loadRoot();},5000);};reader.readAsDataURL(file);});
 
-  function triggerUpload() {
-    uploadInput.click();
-  }
+function loadRoot(){let html=`<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+<tr onclick="openLogs()"><td><span class="icon folder">📁</span>Logs</td><td>File folder</td><td>—</td></tr>
+<tr onclick="deny()"><td><span class="icon folder">📁</span>Projects</td><td>File folder</td><td>—</td></tr>
+<tr onclick="deny()"><td><span class="icon folder">📁</span>ES</td><td>File folder</td><td>—</td></tr>
+<tr onclick="openScotty()"><td><span class="icon folder">📁</span>scotty</td><td>File folder</td><td>—</td></tr>`;
+if(userFiles.length>0){html+=`<tr onclick="openUser()"><td><span class="icon folder">📁</span>${userFolder}</td><td>User Folder</td><td>—</td></tr>`;}
+table.innerHTML=html;}
 
-  uploadInput.addEventListener("change", () => {
-    const file = uploadInput.files[0];
-    if (!file) return;
+function openLogs(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="deny()"><td><span class="icon txt">📄</span>system_log.txt</td><td>Text Document</td><td>0.1 TB</td></tr><tr onclick="deny()"><td><span class="icon mp4">🎥</span>secret.mp4</td><td>MP4 Video</td><td>13.0 TB</td></tr>`;}
+function openUser(){let html=`<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;userFiles.forEach((f,i)=>{html+=`<tr><td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td><td>${f.type}</td><td>—</td><td><button onclick="confirmDeleteFile(event,${i})">Delete</button></td></tr>`;});table.innerHTML=html;}
+function openScotty(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="openScottyImage()"><td><span class="icon file">🖼️</span>crashout.png</td><td>PNG Image</td><td>—</td></tr>`;}
+function openScottyImage(){viewerBox.innerHTML=`<img src="data:image/webp;base64,UklGRpLNAQBXRUJQVlA4TIXNAQAvAYR7AI1AaCTJkaScfdno5Q94Z88hiOj/BDCLL/pafaZQZT/nEkMf6omfMpCszxBVElRpfal+3ifXQlA0s1Crz6Rym41V9JloE6qQDOsDXCvJNWGlj3Rb9rndKZ9QaJNu3L1XB3JBl326wGAcr4F6o" style="max-width:100%"><br><br><strong>crashout.png</strong><br><br><button onclick="closeViewer()">Close</button>`;viewer.style.display="flex";}
 
-    if (!userFolder) {
-      userFolder = "User" + Math.floor(Math.random() * 900000 + 100000);
-      localStorage.setItem("userFolder", userFolder);
-    }
+function openFile(i){const f=userFiles[i];let preview=`<p>Preview not available.</p>`;if(f.type.startsWith("image/")){preview=`<img src="${f.data}" style="max-width:100%">`;}
+else if(f.type.startsWith("text/")||f.type=="application/pdf"){preview=`<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;}
+else if(f.type.startsWith("video/")){preview=`<video src="${f.data}" controls style="max-width:100%"></video>`;}
+else if(f.type.startsWith("audio/")){preview=`<audio src="${f.data}" controls></audio>`;}
+viewerBox.innerHTML=`${preview}<br><br><a href="${f.data}" download="${f.name}"><button>Download</button></a><button onclick="closeViewer()">Close</button>`;viewer.style.display="flex";}
 
-    statusText.textContent = "Waiting for administrator…";
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setTimeout(() => {
-        userFiles.push({
-          name: file.name,
-          type: file.type || "application/octet-stream",
-          data: reader.result
-        });
-        localStorage.setItem("userFiles", JSON.stringify(userFiles));
-        statusText.textContent = "Approved";
-        notify.style.display = "flex";
-        loadRoot();
-      }, 5000);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function loadRoot() {
-    let html = `
-      <tr><th>Name</th><th>Type</th><th>Size</th></tr>
-      <tr onclick="openLogs()">
-        <td><span class="icon folder">📁</span>Logs</td>
-        <td>File folder</td>
-        <td>—</td>
-      </tr>
-      <tr onclick="deny()">
-        <td><span class="icon folder">📁</span>Projects</td>
-        <td>File folder</td>
-        <td>—</td>
-      </tr>
-      <tr onclick="deny()">
-        <td><span class="icon folder">📁</span>ES</td>
-        <td>File folder</td>
-        <td>—</td>
-      </tr>
-    `;
-
-    if (userFiles.length > 0) {
-      html += `
-        <tr onclick="openUser()">
-          <td><span class="icon folder">📁</span>${userFolder}</td>
-          <td>User Folder</td>
-          <td>—</td>
-        </tr>
-      `;
-    }
-    table.innerHTML = html;
-  }
-
-  function openLogs() {
-    table.innerHTML = `
-      <tr><th>Name</th><th>Type</th><th>Size</th></tr>
-      <tr onclick="deny()">
-        <td><span class="icon txt">📄</span>system_log.txt</td>
-        <td>Text Document</td>
-        <td>0.1 TB</td>
-      </tr>
-      <tr onclick="deny()">
-        <td><span class="icon mp4">🎥</span>secret.mp4</td>
-        <td>MP4 Video</td>
-        <td>13.0 TB</td>
-      </tr>
-    `;
-  }
-
-  function openUser() {
-    let html = `<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;
-    userFiles.forEach((f, i) => {
-      html += `
-        <tr>
-          <td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td>
-          <td>${f.type}</td>
-          <td>—</td>
-          <td><button onclick="confirmDeleteFile(event, ${i})">Delete</button></td>
-        </tr>
-      `;
-    });
-    table.innerHTML = html;
-  }
-
-  function openFile(i) {
-    const f = userFiles[i];
-    let preview = `<p>Preview not available.</p>`;
-
-    if (f.type.startsWith("image/")) {
-      preview = `<img src="${f.data}" style="max-width:100%">`;
-    } else if (f.type.startsWith("text/") || f.type === "application/pdf") {
-      preview = `<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;
-    } else if (f.type.startsWith("video/")) {
-      preview = `<video src="${f.data}" controls style="max-width:100%"></video>`;
-    } else if (f.type.startsWith("audio/")) {
-      preview = `<audio src="${f.data}" controls></audio>`;
-    }
-
-    viewerBox.innerHTML = `
-      ${preview}<br><br>
-      <a href="${f.data}" download="${f.name}"><button>Download</button></a>
-      <button onclick="closeViewer()">Close</button>
-    `;
-
-    viewer.style.display = "flex";
-  }
-
-  function confirmDeleteFile(event, i) {
-    event.stopPropagation();
-    deleteIndex = i;
-    confirmDelete.style.display = "flex";
-  }
-
-  yesDeleteBtn.addEventListener("click", () => {
-    if (deleteIndex !== null) {
-      userFiles.splice(deleteIndex, 1);
-      localStorage.setItem("userFiles", JSON.stringify(userFiles));
-      deleteIndex = null;
-      confirmDelete.style.display = "none";
-
-      if (userFiles.length === 0) {
-        userFolder = null;
-        localStorage.removeItem("userFolder");
-      }
-      loadRoot();
-    }
-  });
-
-  function closeConfirm() { confirmDelete.style.display = "none"; deleteIndex = null; }
-  function deny() { document.getElementById("denied").style.display = "flex"; }
-  function closeDenied() { document.getElementById("denied").style.display = "none"; }
-  function closeViewer() { viewer.style.display = "none"; }
-  function closeNotify() { notify.style.display = "none"; }
-  function showLogin() {
-    document.getElementById("loginPopup").style.display = "flex";
-  }
-
-  function closeLogin() {
-    document.getElementById("loginPopup").style.display = "none";
-  }
-
-  function attemptLogin() {
-    document.getElementById("loginStatus").textContent = "Password is incorrect.";
-  }
-
-  function goBack() { loadRoot(); }
-
-  loadRoot();
+function confirmDeleteFile(e,i){e.stopPropagation();deleteIndex=i;confirmDelete.style.display="flex";}
+yesDeleteBtn.addEventListener("click",()=>{if(deleteIndex!==null){userFiles.splice(deleteIndex,1);localStorage.setItem("userFiles",JSON.stringify(userFiles));deleteIndex=null;confirmDelete.style.display="none";if(userFiles.length===0){userFolder=null;localStorage.removeItem("userFolder");}loadRoot();}});
+function closeConfirm(){confirmDelete.style.display="none";deleteIndex=null;}
+function deny(){document.getElementById("denied").style.display="flex";}
+function closeDenied(){document.getElementById("denied").style.display="none";}
+function closeViewer(){viewer.style.display="none";}
+function closeNotify(){notify.style.display="none";}
+function showLogin(){document.getElementById("loginPopup").style.display="flex";}
+function closeLogin(){document.getElementById("loginPopup").style.display="none";}
+function attemptLogin(){document.getElementById("loginStatus").textContent="Password is incorrect.";}
+function goBack(){loadRoot();}
+loadRoot();
 </script>
-
 </body>
 </html>
