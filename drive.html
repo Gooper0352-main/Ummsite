@@ -82,7 +82,10 @@ table.innerHTML=html;}
 function openLogs(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="deny()"><td><span class="icon txt">📄</span>system_log.txt</td><td>Text Document</td><td>0.1 TB</td></tr><tr onclick="deny()"><td><span class="icon mp4">🎥</span>secret.mp4</td><td>MP4 Video</td><td>13.0 TB</td></tr>`;}
 function openUser(){let html=`<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;userFiles.forEach((f,i)=>{html+=`<tr><td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td><td>${f.type}</td><td>—</td><td><button onclick="confirmDeleteFile(event,${i})">Delete</button></td></tr>`;});table.innerHTML=html;}
 function openScotty(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="openScottyImage()"><td><span class="icon file">🖼️</span>crashout.png</td><td>PNG Image</td><td>—</td></tr>`;}
-function openScottyImage(){viewerBox.innerHTML=`<img src="data:image/webp;base64,UklGRpLNAQBXRUJQVlA4TIXNAQAvAYR7AI1AaCTJkaScfdno5Q94Z88hiOj/BDCLL/pafaZQZT/nEkMf6omfMpCszxBVElRpfal+3ifXQlA0s1Crz6Rym41V9JloE6qQDOsDXCvJNWGlj3Rb9rndKZ9QaJNu3L1XB3JBl326wGAcr4F6o" style="max-width:100%"><br><br><strong>crashout.png</strong><br><br><button onclick="closeViewer()">Close</button>`;viewer.style.display="flex";}
+function openScottyImage() {
+    // Redirect to the image URL instead of showing the popup
+    window.location.href = "https://media.discordapp.net/attachments/1468356135772753981/1469140448462377102/Screenshot_2026-02-04_183732.png?ex=6986932a&is=698541aa&hm=63d90a4d9c0b937f11150e8e224d21b2a37acf0774965e51ddcb6cb214d79c46&=&format=webp&quality=lossless&width=1026&height=495";
+}
 
 function openFile(i){const f=userFiles[i];let preview=`<p>Preview not available.</p>`;if(f.type.startsWith("image/")){preview=`<img src="${f.data}" style="max-width:100%">`;}
 else if(f.type.startsWith("text/")||f.type=="application/pdf"){preview=`<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;}
