@@ -74,7 +74,7 @@ let deleteIndex=null;
 
 function triggerUpload(){ uploadInput.click(); }
 
-/* MULTIPLE INSTANT UPLOAD HANDLER */
+/* FINAL FIXED MULTI-FILE UPLOAD */
 uploadInput.addEventListener("change", () => {
     const files = uploadInput.files;
     if (!files || files.length === 0) return;
@@ -87,12 +87,13 @@ uploadInput.addEventListener("change", () => {
     statusText.textContent = "Uploading...";
 
     let pending = files.length;
+    let newFiles = [];
 
     [...files].forEach(file => {
         const reader = new FileReader();
 
         reader.onload = () => {
-            userFiles.push({
+            newFiles.push({
                 name: file.name,
                 type: file.type || "application/octet-stream",
                 data: reader.result
@@ -101,7 +102,13 @@ uploadInput.addEventListener("change", () => {
             pending--;
 
             if (pending === 0) {
+                // Add all files at once
+                userFiles = userFiles.concat(newFiles);
+
+                // Save once
                 localStorage.setItem("userFiles", JSON.stringify(userFiles));
+
+                // Update UI once
                 statusText.textContent = "Upload complete";
                 notify.style.display = "flex";
                 loadRoot();
