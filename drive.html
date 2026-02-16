@@ -34,7 +34,10 @@ tr:hover { background: #333; }
 <button onclick="goBack()">← Back</button>
 <button onclick="triggerUpload()">Upload File</button>
 <span class="status" id="status">Ready</span>
-<input type="file" id="uploadInput" hidden />
+
+<!-- MULTIPLE FILE SUPPORT -->
+<input type="file" id="uploadInput" hidden multiple />
+
 </div>
 <div class="content">
 <div class="sidebar">
@@ -64,46 +67,146 @@ const viewerBox=document.getElementById("viewerBox");
 const notify=document.getElementById("notify");
 const confirmDelete=document.getElementById("confirmDelete");
 const yesDeleteBtn=document.getElementById("yesDelete");
+
 let userFolder=localStorage.getItem("userFolder");
 let userFiles=JSON.parse(localStorage.getItem("userFiles")||"[]");
 let deleteIndex=null;
 
-function triggerUpload(){uploadInput.click();}
-uploadInput.addEventListener("change",()=>{const file=uploadInput.files[0];if(!file)return;if(!userFolder){userFolder="User"+Math.floor(Math.random()*900000+100000);localStorage.setItem("userFolder",userFolder);}statusText.textContent="Waiting for administrator…";const reader=new FileReader();reader.onload=()=>{setTimeout(()=>{userFiles.push({name:file.name,type:file.type||"application/octet-stream",data:reader.result});localStorage.setItem("userFiles",JSON.stringify(userFiles));statusText.textContent="Approved";notify.style.display="flex";loadRoot();},5000);};reader.readAsDataURL(file);});
+function triggerUpload(){ uploadInput.click(); }
 
-function loadRoot(){let html=`<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+/* MULTIPLE INSTANT UPLOAD HANDLER */
+uploadInput.addEventListener("change", () => {
+    const files = uploadInput.files;
+    if (!files || files.length === 0) return;
+
+    if (!userFolder) {
+        userFolder = "User" + Math.floor(Math.random() * 900000 + 100000);
+        localStorage.setItem("userFolder", userFolder);
+    }
+
+    statusText.textContent = "Uploading...";
+
+    let pending = files.length;
+
+    [...files].forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            userFiles.push({
+                name: file.name,
+                type: file.type || "application/octet-stream",
+                data: reader.result
+            });
+
+            pending--;
+
+            if (pending === 0) {
+                localStorage.setItem("userFiles", JSON.stringify(userFiles));
+                statusText.textContent = "Upload complete";
+                notify.style.display = "flex";
+                loadRoot();
+            }
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
+
+function loadRoot(){
+    let html=`<tr><th>Name</th><th>Type</th><th>Size</th></tr>
 <tr onclick="openLogs()"><td><span class="icon folder">📁</span>Logs</td><td>File folder</td><td>—</td></tr>
 <tr onclick="deny()"><td><span class="icon folder">📁</span>Projects</td><td>File folder</td><td>—</td></tr>
 <tr onclick="deny()"><td><span class="icon folder">📁</span>ES</td><td>File folder</td><td>—</td></tr>
 <tr onclick="openScotty()"><td><span class="icon folder">📁</span>scotty</td><td>File folder</td><td>—</td></tr>`;
-if(userFiles.length>0){html+=`<tr onclick="openUser()"><td><span class="icon folder">📁</span>${userFolder}</td><td>User Folder</td><td>—</td></tr>`;}
-table.innerHTML=html;}
 
-function openLogs(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="deny()"><td><span class="icon txt">📄</span>system_log.txt</td><td>Text Document</td><td>0.1 TB</td></tr><tr onclick="deny()"><td><span class="icon mp4">🎥</span>secret.mp4</td><td>MP4 Video</td><td>13.0 TB</td></tr>`;}
-function openUser(){let html=`<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;userFiles.forEach((f,i)=>{html+=`<tr><td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td><td>${f.type}</td><td>—</td><td><button onclick="confirmDeleteFile(event,${i})">Delete</button></td></tr>`;});table.innerHTML=html;}
-function openScotty(){table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr><tr onclick="openScottyImage()"><td><span class="icon file">🖼️</span>crashout.png</td><td>PNG Image</td><td>—</td></tr>`;}
-function openScottyImage() {
-    // Redirect to the image URL instead of showing the popup
-    window.location.href = "https://media.discordapp.net/attachments/1468356135772753981/1469140448462377102/Screenshot_2026-02-04_183732.png?ex=6986932a&is=698541aa&hm=63d90a4d9c0b937f11150e8e224d21b2a37acf0774965e51ddcb6cb214d79c46&=&format=webp&quality=lossless&width=1026&height=495";
+    if(userFiles.length>0){
+        html+=`<tr onclick="openUser()"><td><span class="icon folder">📁</span>${userFolder}</td><td>User Folder</td><td>—</td></tr>`;
+    }
+
+    table.innerHTML=html;
 }
 
-function openFile(i){const f=userFiles[i];let preview=`<p>Preview not available.</p>`;if(f.type.startsWith("image/")){preview=`<img src="${f.data}" style="max-width:100%">`;}
-else if(f.type.startsWith("text/")||f.type=="application/pdf"){preview=`<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;}
-else if(f.type.startsWith("video/")){preview=`<video src="${f.data}" controls style="max-width:100%"></video>`;}
-else if(f.type.startsWith("audio/")){preview=`<audio src="${f.data}" controls></audio>`;}
-viewerBox.innerHTML=`${preview}<br><br><a href="${f.data}" download="${f.name}"><button>Download</button></a><button onclick="closeViewer()">Close</button>`;viewer.style.display="flex";}
+function openLogs(){
+    table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+<tr onclick="deny()"><td><span class="icon txt">📄</span>system_log.txt</td><td>Text Document</td><td>0.1 TB</td></tr>
+<tr onclick="deny()"><td><span class="icon mp4">🎥</span>secret.mp4</td><td>MP4 Video</td><td>13.0 TB</td></tr>`;
+}
 
-function confirmDeleteFile(e,i){e.stopPropagation();deleteIndex=i;confirmDelete.style.display="flex";}
-yesDeleteBtn.addEventListener("click",()=>{if(deleteIndex!==null){userFiles.splice(deleteIndex,1);localStorage.setItem("userFiles",JSON.stringify(userFiles));deleteIndex=null;confirmDelete.style.display="none";if(userFiles.length===0){userFolder=null;localStorage.removeItem("userFolder");}loadRoot();}});
-function closeConfirm(){confirmDelete.style.display="none";deleteIndex=null;}
-function deny(){document.getElementById("denied").style.display="flex";}
-function closeDenied(){document.getElementById("denied").style.display="none";}
-function closeViewer(){viewer.style.display="none";}
-function closeNotify(){notify.style.display="none";}
-function showLogin(){document.getElementById("loginPopup").style.display="flex";}
-function closeLogin(){document.getElementById("loginPopup").style.display="none";}
-function attemptLogin(){document.getElementById("loginStatus").textContent="Password is incorrect.";}
-function goBack(){loadRoot();}
+function openUser(){
+    let html=`<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;
+    userFiles.forEach((f,i)=>{
+        html+=`<tr>
+<td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td>
+<td>${f.type}</td>
+<td>—</td>
+<td><button onclick="confirmDeleteFile(event,${i})">Delete</button></td>
+</tr>`;
+    });
+    table.innerHTML=html;
+}
+
+function openScotty(){
+    table.innerHTML=`<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+<tr onclick="openScottyImage()"><td><span class="icon file">🖼️</span>crashout.png</td><td>PNG Image</td><td>—</td></tr>`;
+}
+
+function openScottyImage(){
+    window.location.href="https://media.discordapp.net/attachments/1468356135772753981/1469140448462377102/Screenshot_2026-02-04_183732.png";
+}
+
+function openFile(i){
+    const f=userFiles[i];
+    let preview=`<p>Preview not available.</p>`;
+
+    if(f.type.startsWith("image/")){
+        preview=`<img src="${f.data}" style="max-width:100%">`;
+    } else if(f.type.startsWith("text/")||f.type=="application/pdf"){
+        preview=`<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;
+    } else if(f.type.startsWith("video/")){
+        preview=`<video src="${f.data}" controls style="max-width:100%"></video>`;
+    } else if(f.type.startsWith("audio/")){
+        preview=`<audio src="${f.data}" controls></audio>`;
+    }
+
+    viewerBox.innerHTML=`${preview}<br><br>
+<a href="${f.data}" download="${f.name}"><button>Download</button></a>
+<button onclick="closeViewer()">Close</button>`;
+
+    viewer.style.display="flex";
+}
+
+function confirmDeleteFile(e,i){
+    e.stopPropagation();
+    deleteIndex=i;
+    confirmDelete.style.display="flex";
+}
+
+yesDeleteBtn.addEventListener("click",()=>{
+    if(deleteIndex!==null){
+        userFiles.splice(deleteIndex,1);
+        localStorage.setItem("userFiles",JSON.stringify(userFiles));
+        deleteIndex=null;
+        confirmDelete.style.display="none";
+
+        if(userFiles.length===0){
+            userFolder=null;
+            localStorage.removeItem("userFolder");
+        }
+
+        loadRoot();
+    }
+});
+
+function closeConfirm(){ confirmDelete.style.display="none"; deleteIndex=null; }
+function deny(){ document.getElementById("denied").style.display="flex"; }
+function closeDenied(){ document.getElementById("denied").style.display="none"; }
+function closeViewer(){ viewer.style.display="none"; }
+function closeNotify(){ notify.style.display="none"; }
+function showLogin(){ document.getElementById("loginPopup").style.display="flex"; }
+function closeLogin(){ document.getElementById("loginPopup").style.display="none"; }
+function attemptLogin(){ document.getElementById("loginStatus").textContent="Password is incorrect."; }
+function goBack(){ loadRoot(); }
+
 loadRoot();
 </script>
 </body>
