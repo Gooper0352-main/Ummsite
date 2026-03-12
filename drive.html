@@ -19,6 +19,7 @@ tr:hover { background: #333; }
 .icon { width: 18px; display: inline-block; margin-right: 6px; }
 .folder { color: #e8c547; }
 .file { color: #4aa3ff; }
+.zip { color: #ffa500; }
 .txt { color: #ccc; }
 .mp4 { color: #ff5555; }
 .popup { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; }
@@ -27,226 +28,283 @@ tr:hover { background: #333; }
 </style>
 </head>
 <body>
+
 <div class="explorer">
-  <div class="titlebar">File Explorer</div>
-  <div class="toolbar">
-    <button onclick="showLogin()">Login</button>
-    <button onclick="goBack()">← Back</button>
-    <button onclick="triggerUpload()">Upload File</button>
-    <span class="status" id="status">Ready</span>
-    <input type="file" id="uploadInput" hidden multiple />
-  </div>
-  <div class="content">
-    <div class="sidebar">
-      <div>This PC</div>
-      <div>Local Disk (Z:)</div>
-    </div>
-    <div class="files">
-      <table id="fileTable"></table>
-    </div>
-  </div>
-  <div class="footer">Used: <strong>13.1 TB</strong> | Free: <strong>1.6 PB (99%)</strong></div>
+
+<div class="titlebar">File Explorer</div>
+
+<div class="toolbar">
+<button onclick="showLogin()">Login</button>
+<button onclick="goBack()">← Back</button>
+<button onclick="triggerUpload()">Upload File</button>
+<span class="status" id="status">Ready</span>
+<input type="file" id="uploadInput" hidden multiple />
 </div>
 
+<div class="content">
+
+<div class="sidebar">
+<div>This PC</div>
+<div>Local Disk (Z:)</div>
+</div>
+
+<div class="files">
+<table id="fileTable"></table>
+</div>
+
+</div>
+
+<div class="footer">
+Used: <strong>13.1 TB</strong> | Free: <strong>1.6 PB (99%)</strong>
+</div>
+
+</div>
+
+
 <!-- Popups -->
+
 <div class="popup" id="denied">
-  <div class="popup-box">
-    <strong>Access Denied</strong>
-    <p>You don’t have permission to view this file.</p>
-    <button onclick="closeDenied()">OK</button>
-  </div>
+<div class="popup-box">
+<strong>Access Denied</strong>
+<p>You don’t have permission to view this file.</p>
+<button onclick="closeDenied()">OK</button>
+</div>
 </div>
 
 <div class="popup" id="viewer">
-  <div class="popup-box" id="viewerBox"></div>
+<div class="popup-box" id="viewerBox"></div>
 </div>
 
 <div class="popup" id="notify">
-  <div class="popup-box">
-    <strong>Administrator has accepted your file.</strong><br><br>
-    <button onclick="closeNotify()">OK</button>
-  </div>
+<div class="popup-box">
+<strong>Administrator has accepted your file.</strong><br><br>
+<button onclick="closeNotify()">OK</button>
+</div>
 </div>
 
 <div class="popup" id="confirmDelete">
-  <div class="popup-box">
-    <p>Are you sure you want to delete this file?</p>
-    <button id="yesDelete">Yes</button>
-    <button onclick="closeConfirm()">No</button>
-  </div>
+<div class="popup-box">
+<p>Are you sure you want to delete this file?</p>
+<button id="yesDelete">Yes</button>
+<button onclick="closeConfirm()">No</button>
+</div>
 </div>
 
 <div class="popup" id="loginPopup">
-  <div class="popup-box">
-    <strong>Administrator Login</strong><br><br>
-    <input type="password" id="adminPass" placeholder="Password" style="padding:6px;width:80%"><br><br>
-    <div id="loginStatus" style="color:#ff5555;font-size:13px"></div><br>
-    <button onclick="attemptLogin()">Login</button>
-    <button onclick="closeLogin()">Cancel</button>
-  </div>
+<div class="popup-box">
+<strong>Administrator Login</strong><br><br>
+<input type="password" id="adminPass" placeholder="Password" style="padding:6px;width:80%"><br><br>
+<div id="loginStatus" style="color:#ff5555;font-size:13px"></div><br>
+<button onclick="attemptLogin()">Login</button>
+<button onclick="closeLogin()">Cancel</button>
+</div>
 </div>
 
+
 <script>
+
 const table = document.getElementById("fileTable");
 const uploadInput = document.getElementById("uploadInput");
 const statusText = document.getElementById("status");
-const viewer = document.getElementById("viewer");
-const viewerBox = document.getElementById("viewerBox");
-const notify = document.getElementById("notify");
-const confirmDelete = document.getElementById("confirmDelete");
-const yesDeleteBtn = document.getElementById("yesDelete");
 
 let userFolder = localStorage.getItem("userFolder");
 let userFiles = JSON.parse(localStorage.getItem("userFiles") || "[]");
-let deleteIndex = null;
 
 function triggerUpload() {
-  uploadInput.click();
+uploadInput.click();
 }
 
-/* Sequential, robust multi-file upload */
 uploadInput.addEventListener("change", async () => {
-  const files = [...uploadInput.files];
-  if (files.length === 0) return;
 
-  if (!userFolder) {
-    userFolder = "User" + Math.floor(Math.random() * 900000 + 100000);
-    localStorage.setItem("userFolder", userFolder);
-  }
+const files = [...uploadInput.files];
+if (files.length === 0) return;
 
-  statusText.textContent = "Uploading...";
+if (!userFolder) {
+userFolder = "User" + Math.floor(Math.random()*900000+100000);
+localStorage.setItem("userFolder",userFolder);
+}
 
-  function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({
-        name: file.name,
-        type: file.type || "application/octet-stream",
-        data: reader.result
-      });
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+statusText.textContent="Uploading...";
 
-  try {
-    const results = [];
-    for (const file of files) {
-      const data = await readFileAsDataURL(file);
-      results.push(data);
-    }
-
-    userFiles = userFiles.concat(results);
-    localStorage.setItem("userFiles", JSON.stringify(userFiles));
-
-    statusText.textContent = "Upload complete";
-    notify.style.display = "flex";
-    loadRoot();
-  } catch (err) {
-    console.error("File upload error:", err);
-    statusText.textContent = "Upload failed";
-  } finally {
-    // allow re-uploading same files if needed
-    uploadInput.value = "";
-  }
+function readFile(file){
+return new Promise((resolve)=>{
+const reader=new FileReader();
+reader.onload=()=>resolve({
+name:file.name,
+type:file.type,
+data:reader.result
 });
-
-function loadRoot() {
-  let html = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
-<tr onclick="openLogs()"><td><span class="icon folder">📁</span>Logs</td><td>File folder</td><td>—</td></tr>
-<tr onclick="deny()"><td><span class="icon folder">📁</span>Projects</td><td>File folder</td><td>—</td></tr>
-<tr onclick="deny()"><td><span class="icon folder">📁</span>ES</td><td>File folder</td><td>—</td></tr>
-<tr onclick="openScotty()"><td><span class="icon folder">📁</span>scotty</td><td>File folder</td><td>—</td></tr>`;
-
-  if (userFiles.length > 0) {
-    html += `<tr onclick="openUser()"><td><span class="icon folder">📁</span>${userFolder}</td><td>User Folder</td><td>—</td></tr>`;
-  }
-
-  table.innerHTML = html;
-}
-
-function openLogs() {
-  table.innerHTML = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
-<tr onclick="deny()"><td><span class="icon txt">📄</span>system_log.txt</td><td>Text Document</td><td>0.1 TB</td></tr>
-<tr onclick="deny()"><td><span class="icon mp4">🎥</span>secret.mp4</td><td>MP4 Video</td><td>13.0 TB</td></tr>`;
-}
-
-function openUser() {
-  let html = `<tr><th>Name</th><th>Type</th><th>Size</th><th>Action</th></tr>`;
-  userFiles.forEach((f, i) => {
-    html += `<tr>
-<td onclick="openFile(${i})"><span class="icon file">📦</span>${f.name}</td>
-<td>${f.type}</td>
-<td>—</td>
-<td><button onclick="confirmDeleteFile(event,${i})">Delete</button></td>
-</tr>`;
-  });
-  table.innerHTML = html;
-}
-
-function openScotty() {
-  table.innerHTML = `<tr><th>Name</th><th>Type</th><th>Size</th></tr>
-<tr onclick="openScottyImage()"><td><span class="icon file">🖼️</span>crashout.png</td><td>PNG Image</td><td>—</td></tr>`;
-}
-
-function openScottyImage() {
-  window.location.href = "https://media.discordapp.net/attachments/1468356135772753981/1469140448462377102/Screenshot_2026-02-04_183732.png";
-}
-
-function openFile(i) {
-  const f = userFiles[i];
-  let preview = `<p>Preview not available.</p>`;
-
-  if (f.type.startsWith("image/")) {
-    preview = `<img src="${f.data}" style="max-width:100%">`;
-  } else if (f.type.startsWith("text/") || f.type === "application/pdf") {
-    preview = `<iframe src="${f.data}" style="width:600px;height:400px;"></iframe>`;
-  } else if (f.type.startsWith("video/")) {
-    preview = `<video src="${f.data}" controls style="max-width:100%"></video>`;
-  } else if (f.type.startsWith("audio/")) {
-    preview = `<audio src="${f.data}" controls></audio>`;
-  }
-
-  viewerBox.innerHTML = `${preview}<br><br>
-<a href="${f.data}" download="${f.name}"><button>Download</button></a>
-<button onclick="closeViewer()">Close</button>`;
-
-  viewer.style.display = "flex";
-}
-
-function confirmDeleteFile(e, i) {
-  e.stopPropagation();
-  deleteIndex = i;
-  confirmDelete.style.display = "flex";
-}
-
-yesDeleteBtn.addEventListener("click", () => {
-  if (deleteIndex !== null) {
-    userFiles.splice(deleteIndex, 1);
-    localStorage.setItem("userFiles", JSON.stringify(userFiles));
-    deleteIndex = null;
-    confirmDelete.style.display = "none";
-
-    if (userFiles.length === 0) {
-      userFolder = null;
-      localStorage.removeItem("userFolder");
-    }
-
-    loadRoot();
-  }
+reader.readAsDataURL(file);
 });
+}
 
-function closeConfirm() { confirmDelete.style.display = "none"; deleteIndex = null; }
-function deny() { document.getElementById("denied").style.display = "flex"; }
-function closeDenied() { document.getElementById("denied").style.display = "none"; }
-function closeViewer() { viewer.style.display = "none"; }
-function closeNotify() { notify.style.display = "none"; }
-function showLogin() { document.getElementById("loginPopup").style.display = "flex"; }
-function closeLogin() { document.getElementById("loginPopup").style.display = "none"; }
-function attemptLogin() { document.getElementById("loginStatus").textContent = "Password is incorrect."; }
-function goBack() { loadRoot(); }
+const results=[];
+
+for(const f of files){
+results.push(await readFile(f));
+}
+
+userFiles=userFiles.concat(results);
+localStorage.setItem("userFiles",JSON.stringify(userFiles));
+
+statusText.textContent="Upload complete";
 
 loadRoot();
+
+});
+
+
+/* ROOT */
+
+function loadRoot(){
+
+let html=`
+<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+
+<tr onclick="openLogs()">
+<td><span class="icon folder">📁</span>Logs</td>
+<td>File folder</td>
+<td>—</td>
+</tr>
+
+<tr onclick="openGames()">
+<td><span class="icon folder">📁</span>Games</td>
+<td>File folder</td>
+<td>—</td>
+</tr>
+
+<tr onclick="deny()">
+<td><span class="icon folder">📁</span>Projects</td>
+<td>File folder</td>
+<td>—</td>
+</tr>
+
+<tr onclick="deny()">
+<td><span class="icon folder">📁</span>ES</td>
+<td>File folder</td>
+<td>—</td>
+</tr>
+
+<tr onclick="openScotty()">
+<td><span class="icon folder">📁</span>scotty</td>
+<td>File folder</td>
+<td>—</td>
+</tr>
+`;
+
+if(userFiles.length>0){
+html+=`
+<tr onclick="openUser()">
+<td><span class="icon folder">📁</span>${userFolder}</td>
+<td>User Folder</td>
+<td>—</td>
+</tr>`;
+}
+
+table.innerHTML=html;
+
+}
+
+
+/* GAMES FOLDER */
+
+function openGames(){
+
+table.innerHTML=`
+<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+
+<tr onclick="openMSCM()">
+<td><span class="icon zip">📦</span>MCSM.zip</td>
+<td>ZIP Archive</td>
+<td>542 MB</td>
+</tr>
+`;
+
+}
+
+function openMSCM(){
+
+window.open(
+"https://drive.google.com/file/d/1bLtPYMt72c5texGnyO9hCNk3Wt5RkW4E/view?usp=sharing",
+"_blank"
+);
+
+}
+
+
+/* OTHER FOLDERS */
+
+function openLogs(){
+
+table.innerHTML=`
+<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+
+<tr onclick="deny()">
+<td><span class="icon txt">📄</span>system_log.txt</td>
+<td>Text Document</td>
+<td>0.1 TB</td>
+</tr>
+
+<tr onclick="deny()">
+<td><span class="icon mp4">🎥</span>secret.mp4</td>
+<td>MP4 Video</td>
+<td>13.0 TB</td>
+</tr>
+`;
+
+}
+
+function openScotty(){
+
+table.innerHTML=`
+<tr><th>Name</th><th>Type</th><th>Size</th></tr>
+
+<tr onclick="openScottyImage()">
+<td><span class="icon file">🖼️</span>crashout.png</td>
+<td>PNG Image</td>
+<td>—</td>
+</tr>
+`;
+
+}
+
+function openScottyImage(){
+
+window.location.href=
+"https://media.discordapp.net/attachments/1468356135772753981/1469140448462377102/Screenshot_2026-02-04_183732.png";
+
+}
+
+
+/* BASIC */
+
+function deny(){
+document.getElementById("denied").style.display="flex";
+}
+
+function closeDenied(){
+document.getElementById("denied").style.display="none";
+}
+
+function showLogin(){
+document.getElementById("loginPopup").style.display="flex";
+}
+
+function closeLogin(){
+document.getElementById("loginPopup").style.display="none";
+}
+
+function attemptLogin(){
+document.getElementById("loginStatus").textContent="Password is incorrect.";
+}
+
+function goBack(){
+loadRoot();
+}
+
+loadRoot();
+
 </script>
+
 </body>
 </html>
