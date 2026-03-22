@@ -36,7 +36,7 @@
       border-radius: 10px;
       display: none;
       text-align: left;
-      max-width: 800px;
+      max-width: 900px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -77,21 +77,54 @@
   <div id="result"></div>
 
   <script>
-    // Your JSON data
+    // Full JSON data
     const data = {
       "919199027575259158": {"server":"Grow a Garden","user":"divine._.retribution","messages":["<:x_cool:1359917738444849375>","no"]},
       "1465668640711118929":{"server":"Official Fortnite","user":"cusenodusedo_29418","messages":["Lol"]},
       "1130809286189125683":{"server":"Geometry Dash","user":"enzokylertv","messages":["JI ROOETOP"]},
-      "1442516587314942144":{"server":"jmancurly Universe","user":"cr1stalvr","messages":["Is there a wizherd server or is this it"]}
-      // Add all other entries here...
+      "1416049613189943357":{"server":"Volleyball Legends","user":"haikyuuhinatachan_55233","messages":["have no access"]},
+      "1465311375231418368":{"server":"Grow a Garden","user":"angelo095480","messages":["helllo"]},
+      "518323163403386893":{"server":"Python","user":"lunatic_snowy","messages":["Is this bait? 😭"]},
+      "1323834383475539990":{"server":"femboy fun :3 (discord.gg/femz)","user":"gauchito1","messages":["/ <@810328566158852117>"]},
+      "1341591834517962852":{"server":"Grow a Garden","user":"lasegar0079","messages":["BUYING PETS\nPEACOCK 50SX\nBALD EAGLE 50SX\nBLOOD OWL 10SX\nDISCO BEE 300SX\nKOI 100SX\nECHO 50SX\nDILOP 50SX\nBRONTO 50SX\nELEPHANT 50SX\nFROST DRAGON 300SX\nRUBY SQUID 300SX\nMIMIC 50SX\nHEADLESS 20SX\nNEW YEAR DRAGON 100SX\nTRADE 1SX FOR 1 TOKEN\nADD ONLY","BUYING PETS\nPEACOCK 50SX\nBALD EAGLE 50SX\nBLOOD OWL 10SX\nDISCO BEE 300SX\nKOI 100SX\nECHO 50SX\nDILOP 50SX\nBRONTO 50SX\nELEPHANT 50SX\nFROST DRAGON 300SX\nRUBY SQUID 300SX\nMIMIC 50SX\nHEADLESS 20SX\nNEW YEAR DRAGON 100SX\nTRADE 1SX FOR 1 TOKEN\nADD ONLY"]},
+      "1357896088979509329":{"server":"Discord Town Hall","user":"cosmic._.crypton","messages":["."]},
+      "1333686441368227892":{"server":"Official Fortnite","user":"yoitskayfrl","messages":["<@1402319820619255921> 🐺 🐺 🐺"]},
+      "954518949259788378":{"server":"Grow a Garden","user":"ghost123k_","messages":["DM ME\nLF RACCOONS 61 KG \n\nLF RACCOONS 61 KG \n\nLF RACCOONS 61 KG \n\nLF RACCOONS 61 KG \n\nLF RACCOONS 61 KG \n\nLF RACCOONS 61 KG"]},
+      "1359167967585374238":{"server":"VRChat","user":"silencedlost","messages":["guys can anyone teach me how to use blender to make my own avatars im slow"]},
+      "939207490632024134":{"server":"Volleyball Legends","user":"mybrev","messages":["verify from the <#1335365807185854484> channel then go to the \"lfg\" channel in order to find teammates."]},
+      "1455111266334019605":{"server":"Official Fortnite","user":"j_m_r04","messages":["LF duo 18+ must have mic, mainly looking to talk and chill. Im in the clouds rn fr nar nar"]},
+      "698805318246989875":{"server":"MINECRAFT","user":"paninirawr","messages":["i support your incorrect use of the word *your*"]},
+      "904524209571631104":{"server":"Phasmophobia","user":"allpanicnodisco._","messages":["i need help figuring this ghost out. can someone look at my stream and help us out? im gonna have a team mate hide"]},
+      "1291283115515318343":{"server":"Volleyball Legends","user":"k1ra._.7","messages":["bro listens to phonk"]},
+      "1309735332073443395":{"server":"Rust","user":"blake_46968","messages":["FYB IS MASS RECRUITING\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • REQUIREMENTS OVERALL •\n│ 1k+ hours at least (no exceptions and on PC)\n│ 14+\n│ Speaks decent English\n│ Works with the team\n│ Good comms\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • BUILDER •\n│ 1250+ hours\n│ Can work with main builder\n│ 125m+ AK spray\n│ Has original designs (not YouTube bases)\n│ Presents the base to one of the leaders before wipe\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • ELECTRICIAN •\n│ 1250+ hours\n│ 125m+ AK Spray\n│ Can set up early game turrets\n│ Works well with builders\n│ Experienced with power systems\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • MONUMENT •\n│ 1250+ hours\n│ No tryouts under 1k\n│ 175m+ AK spray\n│ Good recoil control\n│ Knows monument callouts\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • ROAMER •\n│ 1500+ hours\n│ No tryouts under 1k\n│ 200m+ AK Spray\n│ Good comms\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n • FARMER •\n│ 500+ hours\n│ Knows comms\n│ Farms when asked\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"]},
+      "704875668797784115":{"server":"Official Fortnite","user":"raelakooo","messages":["from a tv show called shameless im assuming"]},
+      "766172256522469378":{"server":"Official Fortnite","user":"grizzy2315","messages":["LF Duo or Squad, 21+, chill, mic"]},
+      "1342595071379509309":{"server":"Geometry Dash","user":"zalynex","messages":["tenemos nuevo ship"]},
+      "1481851152269180959":{"server":"Rockstar Games","user":"jojacolachugger","messages":["Woof woof"]},
+      "1124859943917453322":{"server":"VALORANT","user":"momo.guy","messages":["What"]},
+      "967614923934945310":{"server":"⚔ Slashest's Dojo ⚔","user":"sxph1efan","messages":["Checks out","i hate youtube"]},
+      "1424274086413996102":{"server":"Lunar Client","user":"dropzalt1","messages":["u mean the chat wipes?"]},
+      "931852087795531788":{"server":"Grow a Garden","user":"quentin.db","messages":["Trading Blue Lobster\nBuying Rbh Lobster"]},
+      "973456815079698494":{"server":"Geometry Dash","user":"zonetanium","messages":["how","it is <:diavlo:1208197602127122542>","says the guy who hasn’t even done the easiest parts btw","if i lock in <:diavlo:1208197602127122542>"]},
+      "1156803055493328956":{"server":"Geometry Dash","user":"namei0525_62341","messages":["<@973456815079698494> im normal guy that follows what every people follow nowadays"]},
+      "1442516587314942144":{"server":"jmancurly Universe","user":"cr1stalvr","messages":["Is there a wizherd server or is this it"]},
+      "951718008743690300":{"server":"Geometry Dash","user":"thetms35","messages":["🦭"]},
+      "1349505054549213236":{"server":"jmancurly Universe","user":"starlightlovesdandysworld","messages":["Wanna be friends"]},
+      "499810861335183372":{"server":"MINECRAFT","user":"davidwang","messages":["i mean, it might, but it's just not supported to downgrade"]},
+      "340508214170877963":{"server":"No Text To Speech","user":"uphunter79","messages":["You aint changing them at the end of the day"]},
+      "821724147804930048":{"server":"Genshin Impact Official","user":"kyorisupposedly","messages":["citlali"]},
+      "1480066638987399351":{"server":"Grow a Garden","user":"fhanvex","messages":["LOOKING FOR SMALL MIMICS FOR 23 TOKENS EACH\nI NEED 22 DM ME!"]},
+      "1064932485668028478":{"server":"Geometry Dash","user":"idk_a_username63536","messages":["TruereeeeryeueyeyrrueydyxtyssjjzicudgzgnaksHELPME"]},
+      "852556171353260042":{"server":"Geometry Dash","user":"nightcloud_.","messages":["im reading your messages with the duck song voice"]},
+      "996263975870283786":{"server":"Official Fortnite","user":"thegoodwitchs","messages":["lf duo must only wear chun li mic on at all times 21+ WOMEN only"]},
+      "967579119250468934":{"server":"Geometry Dash","user":"cosmo304","messages":["Why is everything happening when I get grounded? Deltarune blows up in popularity, Undertale's 10th anniversary build is probably done being recreated and ready to play, Dream does a 6 hunters video, and much more stuff I'm pretty much missing out on :("]},
+      "1432240162175324244":{"server":"Grow a Garden","user":"nothnspcal","messages":["Hello mango"]},
+      "1263900687310520402":{"server":"jmancurly Universe","user":"uz1_.m00ndust","messages":["can you drink water after it absorbed an electrical current"]},
+      "1170762671411429446":{"server":"femboy fun :3 (discord.gg/femz)","user":"darkphan1om","messages":["huh"]}
     };
 
     function formatMessage(msg) {
-      return msg
-        .replace(/\n/g, "<br>")
-        .replace(/\|\|(.*?)\|\|/g, 
-          '<span class="spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>'
-        );
+      return msg.replace(/\n/g, "<br>").replace(/\|\|(.*?)\|\|/g, '<span class="spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>');
     }
 
     function search() {
@@ -109,17 +142,12 @@
 
       Object.keys(data).forEach(id => {
         const entry = data[id];
-        const messagesCombined = entry.messages.join(" ").toLowerCase();
+        const serverClean = entry.server.trim().toLowerCase();
+        const messagesCombined = entry.messages.map(m => m.trim().toLowerCase()).join(" ");
 
-        if (
-          id.includes(query) ||
-          entry.server.toLowerCase().includes(query) ||
-          messagesCombined.includes(query)
-        ) {
+        if (id.includes(query) || serverClean.includes(query) || messagesCombined.includes(query)) {
           found = true;
-
           const messagesHTML = entry.messages.map(msg => `<div class="message">${formatMessage(msg)}</div>`).join("");
-
           resultDiv.innerHTML += `
             <div class="entry">
               <p><strong>ID:</strong> ${id}</p>
