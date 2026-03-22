@@ -60,6 +60,12 @@
     .spoiler.revealed {
       color: #fff;
     }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #333;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
@@ -107,13 +113,17 @@
           return;
         }
 
+        const messagesHTML = userData.messages
+          .map(msg => `<div class="message">${formatMessage(msg)}</div>`)
+          .join("");
+
         resultDiv.innerHTML = `
           <h2>User Found</h2>
           <p><strong>Server:</strong> ${userData.server}</p>
           <p><strong>User:</strong> ${userData.user} (${id})</p>
-          <div class="message">
-            <strong>Message:</strong><br>
-            ${formatMessage(userData.message)}
+          <div>
+            <strong>Messages:</strong>
+            ${messagesHTML}
           </div>
         `;
 
