@@ -70,6 +70,29 @@
 <body>
 
   <h1>Discord Lookup</h1>
+  <h1>Last updated: <span id="lastUpdated"></span></h1>
+
+<script>
+  const discordTimestamp = 1774162534;
+
+  const now = Math.floor(Date.now() / 1000);
+
+  const diffSeconds = now - discordTimestamp;
+
+  const hours = Math.floor(diffSeconds / 3600);
+  const minutes = Math.floor((diffSeconds % 3600) / 60);
+
+  let relative = "";
+  if (hours > 0) {
+    relative = hours + " hour" + (hours > 1 ? "s" : "") + " ago";
+  } else if (minutes > 0) {
+    relative = minutes + " minute" + (minutes > 1 ? "s" : "") + " ago";
+  } else {
+    relative = "just now";
+  }
+
+  document.getElementById("lastUpdated").textContent = relative;
+</script>
 
   <input type="text" id="searchInput" placeholder="Search by ID, Server, or Message">
   <button onclick="search()">Search</button>
@@ -77,7 +100,6 @@
   <div id="result"></div>
 
   <script>
-    // Full JSON data
     const data = {
       "919199027575259158": {"server":"Grow a Garden","user":"divine._.retribution","messages":["<:x_cool:1359917738444849375>","no"]},
       "1465668640711118929":{"server":"Official Fortnite","user":"cusenodusedo_29418","messages":["Lol"]},
