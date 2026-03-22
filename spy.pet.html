@@ -1,111 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Discord ID Lookup</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #111;
-      color: white;
-      text-align: center;
-      padding: 50px;
-    }
-
-    input {
-      padding: 10px;
-      width: 260px;
-      border-radius: 5px;
-      border: none;
-      margin-right: 10px;
-    }
-
-    button {
-      padding: 10px 15px;
-      background: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #result {
-      margin-top: 30px;
-      padding: 20px;
-      background: #222;
-      border-radius: 10px;
-      display: none;
-    }
-
-    .spoiler {
-      background: #000;
-      color: #000;
-      padding: 2px 6px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .spoiler.revealed {
-      color: #fff;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>Discord ID Lookup</h1>
-
-  <input type="text" id="discordId" placeholder="Enter Discord ID">
-  <button onclick="checkID()">Check</button>
-
-  <div id="result"></div>
-
-  <script>
-    function isValidDiscordID(id) {
-      return /^[0-9]{17,19}$/.test(id);
-    }
-
-    function formatMessage(msg) {
-      return msg.replace(/\|\|(.*?)\|\|/g, 
-        '<span class="spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>'
-      );
-    }
-
-    async function checkID() {
-      const id = document.getElementById("discordId").value.trim();
-      const resultDiv = document.getElementById("result");
-
-      if (!isValidDiscordID(id)) {
-        alert("Invalid Discord ID format!");
-        return;
-      }
-
-      resultDiv.style.display = "block";
-      resultDiv.innerHTML = "Loading...";
-
-      try {
-        const response = await fetch("https://gooper.net/spy.json");
-        const data = await response.json();
-
-        const userData = data[id];
-
-        if (!userData) {
-          resultDiv.innerHTML = "User not found.";
-          return;
-        }
-
-        resultDiv.innerHTML = `
-          <h2>User Found</h2>
-          <p><strong>Server:</strong> ${userData.server}</p>
-          <p><strong>User:</strong> ${userData.user} (${id})</p>
-          <p><strong>Message:</strong> ${formatMessage(userData.message)}</p>
-        `;
-
-      } catch (err) {
-        resultDiv.innerHTML = "Failed to fetch data.";
-        console.error(err);
-      }
-    }
-  </script>
-
-</body>
-</html>
+{
+  "964032249181909014": {
+    "server": "MINECRAFT",
+    "user": "clyfar3710",
+    "message": "ohh . that's my bigest project btw"
+  },
+  "771439733955756074": {
+    "server": "Grow a Garden",
+    "user": "xqnoir",
+    "message": "Comedian at their best <:catsmile:1457913132377968871>"
+  },
+  "1139199764664160306": {
+    "server": "femboy fun :3 (discord.gg/femz)",
+    "user": "karomala",
+    "message": "<@722008467946340362> what is liar liar even about"
+  },
+  "1227441827154759803": {
+    "server": "femboy fun :3 (discord.gg/femz)",
+    "user": "goofy_guy113",
+    "message": "I dont likey <:3c_dotgg_femz:1329775845631459491>"
+  },
+  "1483615914308927658": {
+    "server": "Official Fortnite",
+    "user": "fateh_23572",
+    "message": "LF Duo Region: NA-WEST Platform: ANY Age doesn’t matter About me: fragger,nintendo About you IGL have good knows the map well and wants improve. Goal: Long-term duo for tournaments, PR, and improving. User: fortineply3r67"
+  },
+  "1472794035289723012": {
+    "server": "femboy fun :3 (discord.gg/femz)",
+    "user": "prettiestboyinthemourge",
+    "message": "I want treats :<"
+  }
+}
