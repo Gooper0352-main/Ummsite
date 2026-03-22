@@ -35,6 +35,18 @@
       background: #222;
       border-radius: 10px;
       display: none;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      background: #1a1a1a;
+      border-radius: 6px;
+      white-space: normal;
     }
 
     .spoiler {
@@ -65,9 +77,11 @@
     }
 
     function formatMessage(msg) {
-      return msg.replace(/\|\|(.*?)\|\|/g, 
-        '<span class="spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>'
-      );
+      return msg
+        .replace(/\n/g, "<br>")
+        .replace(/\|\|(.*?)\|\|/g, 
+          '<span class="spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>'
+        );
     }
 
     async function checkID() {
@@ -97,7 +111,10 @@
           <h2>User Found</h2>
           <p><strong>Server:</strong> ${userData.server}</p>
           <p><strong>User:</strong> ${userData.user} (${id})</p>
-          <p><strong>Message:</strong> ${formatMessage(userData.message)}</p>
+          <div class="message">
+            <strong>Message:</strong><br>
+            ${formatMessage(userData.message)}
+          </div>
         `;
 
       } catch (err) {
