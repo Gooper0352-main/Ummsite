@@ -1,9 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; URL='mainpage.html'">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifying - Wingman Security</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #1e293b;
+            border-top: 5px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .brand {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .status-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <p>Redirecting to <a href="mainpage.html">The main page</a>...</p>
+
+    <div class="container">
+        <div class="spinner"></div>
+        <h1>Verifying with <span class="brand">Wingman Security</span></h1>
+        <p class="status-text">Please wait while we secure your connection...</p>
+    </div>
+
+    <script>
+        const minTime = 3000;
+        const maxTime = 6000;
+        const randomDelay = Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime;
+
+        setTimeout(() => {
+            window.location.href = "/mainpage";
+        }, randomDelay);
+        
+        console.log(`Redirecting in ${randomDelay / 1000} seconds...`);
+    </script>
 </body>
 </html>
